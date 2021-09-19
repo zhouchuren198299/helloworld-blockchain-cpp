@@ -6,10 +6,19 @@
 #include "crypto/ByteUtil.h"
 #include "util/ThreadUtil.h"
 #include "util/TimeUtil.h"
+#include "util/FileUtil.h"
 #include <string>
+#include "dto/dto.h"
+#include "util/JsonUtil.h"
 
+
+using json = nlohmann::json;
 
 using namespace std;
+
+
+
+
 
 int main()
 {
@@ -40,5 +49,8 @@ int main()
     cout << "---------------------TimeUtil" << endl;
     cout << TimeUtil::millisecondTimestamp() << endl;
     cout << TimeUtil::formatMillisecondTimestamp(TimeUtil::millisecondTimestamp()) << endl;
-    return 0;
+
+/*    string text = FileUtil::read("D:\\workspace\\idea\\helloworld-blockchain-java\\helloworld-blockchain-core\\src\\test\\resources\\blocks\\block1.json") ;
+    dto::BlockDto blockDto = JsonUtil::toObject(text,dto::BlockDto{});
+    cout << "blockDto..." << JsonUtil::toString(blockDto) << endl;*/
 }

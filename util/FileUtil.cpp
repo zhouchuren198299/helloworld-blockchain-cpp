@@ -8,6 +8,9 @@
 #include <direct.h>
 #include <io.h>
 #include <Windows.h>
+#include <fstream>
+#include <vector>
+#include <string>
 #else
 #include <unistd.h>
 #include <fcntl.h>
@@ -155,6 +158,23 @@ void FileUtil::deleteDirectory(string path) {
 		exit(-1);
 	}
 #endif
+}
+
+string FileUtil::read(string path){
+    ifstream myfile(path);
+    string text;
+    string temp;
+    if (!myfile.is_open())
+    {
+        cout << "未成功打开文件" << endl;
+        throw exception("未成功打开文件");
+    }
+    while(getline(myfile,temp))
+    {
+        text = text + temp;
+    }
+    myfile.close();
+    return text;
 }
 
 #if 0

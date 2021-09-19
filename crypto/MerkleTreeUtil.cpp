@@ -5,7 +5,7 @@
 #include "MerkleTreeUtil.h"
 #include "Sha256Util.h"
 #include "ByteUtil.h"
-#include "MathUtil.h"
+#include "../util/MathUtil.h"
 
 vector<unsigned char> MerkleTreeUtil::calculateMerkleTreeRoot(vector<vector<unsigned char>> datas){
     vector<vector<unsigned char>> tree(datas);
