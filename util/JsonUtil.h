@@ -18,16 +18,16 @@ namespace JsonUtil {
     template <typename T>
     inline T const toObject (string jsonString, T const& object)
     {
-        istringstream is(jsonString);;
+        istringstream iss(jsonString);;
         json j;
-        is >> j;
+        iss >> j;
         return j.get<T>();
     }
 
     template <typename T>
     inline string const toString (T const object)
     {
-        const json j {object};
+        const json j{object};
         const string jsonString = j[0].dump(4);
         return jsonString;
     }

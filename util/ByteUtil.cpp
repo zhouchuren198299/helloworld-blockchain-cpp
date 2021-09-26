@@ -8,9 +8,14 @@
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include <assert.h>
+#include <openssl/bn.h>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
+int ByteUtil::BYTE8_BYTE_COUNT = 8;
 
 string uchar2hex(unsigned char inchar)
 {
@@ -26,6 +31,12 @@ string uchars2hex(unsigned char* uchars,int length)
     }
     return hexString;
 }
+string lowercase(string value) {
+    string result(value);
+    std::transform(value.begin(), value.end(), result.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return result;
+}
 vector<unsigned char> ByteUtil::hexStringToBytes(const string& hex) {
     vector<unsigned char> bytes;
     for (unsigned int i = 0; i < hex.length(); i += 2) {
@@ -39,7 +50,6 @@ string ByteUtil::bytesToHexString(vector<unsigned char> bytes) {
     return uchars2hex(&bytes[0],bytes.size());
 }
 
-//TODO TEST
 vector<unsigned char> ByteUtil::uint64ToBytes(uint64_t number){
     vector<unsigned char> bytes;
     bytes.push_back((unsigned char)(number >> 8*7));
@@ -52,17 +62,9 @@ vector<unsigned char> ByteUtil::uint64ToBytes(uint64_t number){
     bytes.push_back((unsigned char)(number >> 8*0));
     return bytes;
 }
-//TODO TEST
 uint64_t ByteUtil::bytesToUint64(vector<unsigned char> bytes){
-    return
-            (uint64_t(bytes[7]) << 8*7) |
-            (uint64_t(bytes[6]) << 8*6) |
-            (uint64_t(bytes[5]) << 8*5) |
-            (uint64_t(bytes[4]) << 8*4) |
-            (uint64_t(bytes[3]) << 8*3) |
-            (uint64_t(bytes[2]) << 8*2) |
-            (uint64_t(bytes[1]) << 8*1) |
-            (uint64_t(bytes[0]) << 8*0);
+    unsigned long long result = strtoull(uchars2hex(&bytes[0],bytes.size()).c_str(), NULL, 16);
+    return result;
 }
 
 vector<unsigned char> ByteUtil::copy(vector<unsigned char> sourceBytes, int startPosition, int length){
@@ -139,9 +141,71 @@ vector<unsigned char> ByteUtil::flatAndConcatenateLength(vector<vector<unsigned 
     vector<unsigned char> flatBytes = flat(values);
     return concatenateLength(flatBytes);
 }
-bool ByteUtil::isEquals(vector<unsigned char> bytes1, vector<unsigned char> bytes2){
+bool ByteUtil::equals(vector<unsigned char> bytes1, vector<unsigned char> bytes2){
     if(bytes1.size() != bytes2.size()){
         return false;
     }
     return std::equal(bytes1.begin(), bytes1.begin() + bytes1.size(), bytes2.begin());
 }
+bool ByteUtil::greatThan(string number1,string number2){
+    BIGNUM *bignum1 = BN_new();
+    BN_hex2bn(&bignum1,number1.c_str());
+    BIGNUM *bignum2 = BN_new();
+    BN_hex2bn(&bignum2,number2.c_str());
+
+    int compareValue = BN_cmp(bignum1,bignum2);
+
+    BN_free(bignum1);
+    BN_free(bignum2);
+    return compareValue>0;
+}
+string ByteUtil::multiply(string number1,string number2){
+    BIGNUM *bignum1 = BN_new();
+    BN_hex2bn(&bignum1,number1.c_str());
+    BIGNUM *bignum2 = BN_new();
+    BN_hex2bn(&bignum2,number2.c_str());
+    BIGNUM *bignumResult = BN_new();
+    BN_CTX *bnCtx = BN_CTX_new();
+    BN_mul(bignumResult,bignum1,bignum2,bnCtx);
+    char* stringResult = BN_bn2hex(bignumResult);
+
+    BN_free(bignum1);
+    BN_free(bignum2);
+    BN_free(bignumResult);
+    BN_CTX_free(bnCtx);
+    return lowercase(stringResult);
+}
+string ByteUtil::divide(string number1,string number2){
+    BIGNUM *bignum1 = BN_new();
+    BN_hex2bn(&bignum1,number1.c_str());
+    BIGNUM *bignum2 = BN_new();
+    BN_hex2bn(&bignum2,number2.c_str());
+    BIGNUM *bignumResult = BN_new();
+    BIGNUM *rem = BN_new();
+    BN_CTX *bnCtx = BN_CTX_new();
+
+
+    BN_div(bignumResult,rem,bignum1,bignum2,bnCtx);
+    char* stringResult = BN_bn2hex(bignumResult);
+
+    BN_free(bignum1);
+    BN_free(bignum2);
+    BN_free(bignumResult);
+    BN_free(rem);
+    BN_CTX_free(bnCtx);
+
+    return lowercase(stringResult);
+}
+#if 0
+int main()
+{
+    uint64_t value = uint64_t(123456789);
+    assert("00000000075bcd15" == ByteUtil::bytesToHexString(ByteUtil::uint64ToBytes(value)));
+    assert(value == ByteUtil::bytesToUint64(ByteUtil::uint64ToBytes(value)));
+
+
+    assert(ByteUtil::greatThan("13A59145513A591413A591445513A591","BA59145513A591413A591445513A5CC"));
+    assert("e4d21ab54f24702a5177329a64542453672d4a2d7c48cd0a56bf3be421648c" == ByteUtil::multiply("13A59145513A591413A591445513A591","BA59145513A591413A591445513A5CC"));
+    assert("1afd7d" == ByteUtil::divide("13A59145513A591413A591445513A591","BA59145513A591413A59144551"));
+}
+#endif

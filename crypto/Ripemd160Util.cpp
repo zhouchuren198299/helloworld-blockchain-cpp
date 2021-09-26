@@ -7,7 +7,7 @@
 #include <string>
 #include <openssl/ripemd.h>
 #include "Sha256Util.h"
-#include "ByteUtil.h"
+#include "../util/ByteUtil.h"
 #include <vector>
 using namespace std;
 

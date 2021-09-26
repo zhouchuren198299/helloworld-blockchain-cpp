@@ -8,7 +8,7 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
-#include "ByteUtil.h"
+#include "../util/ByteUtil.h"
 
 static constexpr const uint8_t Base58Map[] = {
         '1', '2', '3', '4', '5', '6', '7', '8',

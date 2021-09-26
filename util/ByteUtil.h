@@ -10,10 +10,12 @@
 using namespace std;
 
 namespace ByteUtil {
+
+    extern int BYTE8_BYTE_COUNT;
+
     string bytesToHexString(vector<unsigned char> bytes);
     vector<unsigned char> hexStringToBytes(const string& hex);
 
-    //TODO uint64_t跨平台吗?64位吗?
     vector<unsigned char> uint64ToBytes(uint64_t number);
     uint64_t bytesToUint64(vector<unsigned char> bytes);
 
@@ -30,12 +32,17 @@ namespace ByteUtil {
     vector<unsigned char> concatenateLength(vector<unsigned char> value);
     vector<unsigned char> flat(vector<vector<unsigned char>> values);
     vector<unsigned char> flatAndConcatenateLength(vector<vector<unsigned char>> values);
-    bool isEquals(vector<unsigned char> bytes1, vector<unsigned char> bytes2);
 
     vector<unsigned char> copy(vector<unsigned char> sourceBytes, int startPosition, int length);
     void copyTo(vector<unsigned char> sourceBytes, int sourceStartPosition, int length, vector<unsigned char> &destinationBytes, int destinationStartPosition);
 
+    bool equals(vector<unsigned char> bytes1, vector<unsigned char> bytes2);
     vector<unsigned char> random32Bytes();
+
+    //TODO java,go
+    bool greatThan(string number1,string number2);
+    string multiply(string number1,string number2);
+    string divide(string number1,string number2);
 };
 
 

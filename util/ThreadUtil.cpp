@@ -8,7 +8,7 @@
 
 
 
-void ThreadUtil::millisecondSleep(long millisecond){
+void ThreadUtil::millisecondSleep(uint64_t millisecond){
     chrono::milliseconds dura(millisecond);
     this_thread::sleep_for(dura);
 }

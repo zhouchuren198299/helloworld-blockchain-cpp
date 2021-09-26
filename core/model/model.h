@@ -9,16 +9,20 @@
 #include <cstdint>
 #include <vector>
 #include <stack>
+#include "../../dto/dto.h"
+
 using namespace std;
+using namespace dto;
 
 namespace model {
 
     namespace BlockchainActionEnum
     {
-        typedef string BlockchainAction;
-        BlockchainAction ADD_BLOCK;
-        BlockchainAction DELETE_BLOCK;
+        typedef bool BlockchainAction;
+        extern BlockchainAction ADD_BLOCK;
+        extern BlockchainAction DELETE_BLOCK;
     }
+
 
 
 
@@ -28,8 +32,8 @@ namespace model {
             vector<unsigned char> code;
             string name;
         };
-        BooleanCode FALSE{{0x00},"false"};
-        BooleanCode TRUE{{0x01},"true"};
+        extern BooleanCode FALSE;
+        extern BooleanCode TRUE;
     }
     namespace OperationCodeEnum
     {
@@ -37,11 +41,11 @@ namespace model {
             vector<unsigned char> code;
             string name;
         };
-        OperationCode OP_PUSHDATA{{0x00},"OP_PUSHDATA"};
-        OperationCode OP_DUP{{0x01},"OP_DUP"};
-        OperationCode OP_HASH160{{0x02},"OP_HASH160"};
-        OperationCode OP_EQUALVERIFY{{0x03},"OP_EQUALVERIFY"};
-        OperationCode OP_CHECKSIG{{0x04},"OP_CHECKSIG"};
+        extern OperationCode OP_PUSHDATA;
+        extern OperationCode OP_DUP;
+        extern OperationCode OP_HASH160;
+        extern OperationCode OP_EQUALVERIFY;
+        extern OperationCode OP_CHECKSIG;
     }
     typedef vector<string> Script;
     typedef Script InputScript;
@@ -50,29 +54,25 @@ namespace model {
 
 
 
-    class TransactionOutput;
-    class TransactionInput;
-    class Transaction;
+    struct TransactionOutput;
+    struct TransactionInput;
+    struct Transaction;
     namespace TransactionTypeEnum
     {
         typedef string TransactionType;
-        TransactionType GENESIS_TRANSACTION;
-        TransactionType STANDARD_TRANSACTION;
+        extern TransactionType GENESIS_TRANSACTION;
+        extern TransactionType STANDARD_TRANSACTION;
     }
-    class Transaction{
+    struct Transaction{
         string transactionHash;
         TransactionTypeEnum::TransactionType transactionType;
         vector<TransactionInput> inputs;
         vector<TransactionOutput> outputs;
-        long transactionIndex;
-        long transactionHeight;
-        long blockHeight;
+        uint64_t transactionIndex;
+        uint64_t transactionHeight;
+        uint64_t blockHeight;
     };
-    class TransactionInput{
-        TransactionOutput *unspentTransactionOutput;
-        InputScript inputScript;
-    };
-    class TransactionOutput{
+    struct TransactionOutput{
         uint64_t value;
         OutputScript outputScript;
         string transactionHash;
@@ -84,7 +84,11 @@ namespace model {
         uint64_t transactionIndex;
         uint64_t transactionOutputHeight;
     };
-    class Block{
+    struct TransactionInput{
+        TransactionOutput unspentTransactionOutput;
+        InputScript inputScript;
+    };
+    struct Block{
         uint64_t timestamp;
         uint64_t height;
         string previousHash;
@@ -96,6 +100,52 @@ namespace model {
         uint64_t transactionCount;
         uint64_t previousTransactionHeight;
     };
+
+
+    struct Payer{
+        string privateKey;
+        string transactionHash;
+        uint64_t transactionOutputIndex;
+        uint64_t value;
+        string address;
+    };
+    struct Payee{
+        string address;
+        uint64_t value;
+    };
+    struct AutoBuildTransactionRequest{
+        vector<Payee> nonChangePayees;
+    };
+    struct AutoBuildTransactionResponse{
+        bool buildTransactionSuccess;
+        string message;
+        string transactionHash;
+        uint64_t fee;
+        vector<Payer> payers;
+        vector<Payee> nonChangePayees;
+        Payee changePayee;
+        vector<Payee> payees;
+        TransactionDto transaction;
+    };
+    namespace PayAlert {
+        const string PAYEE_CAN_NOT_EMPTY = "payee_can_not_empty";
+        const string PAYEE_ADDRESS_CAN_NOT_EMPTY = "payee_address_can_not_empty";
+        const string PAYEE_VALUE_CAN_NOT_LESS_EQUAL_THAN_ZERO = "payee_value_can_not_less_equal_than_zero";
+        const string NOT_ENOUGH_MONEY_TO_PAY = "not_enough_money_to_pay";
+        const string BUILD_TRANSACTION_SUCCESS = "build_transaction_success";
+    }
+
+    void to_json(json& j, const TransactionOutput& p);
+    void from_json(const json& j, TransactionOutput& p);
+
+    void to_json(json& j, const TransactionInput& p);
+    void from_json(const json& j, TransactionInput& p);
+
+    void to_json(json& j, const Transaction& p);
+    void from_json(const json& j, Transaction& p);
+
+    void to_json(json& j, const Block& p);
+    void from_json(const json& j, Block& p);
 };
 
 

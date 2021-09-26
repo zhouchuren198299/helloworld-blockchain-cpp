@@ -5,7 +5,7 @@
 #include <string>
 #include <openssl/sha.h>
 #include "Sha256Util.h"
-#include "ByteUtil.h"
+#include "../util/ByteUtil.h"
 #include <vector>
 typedef unsigned char byte;
 

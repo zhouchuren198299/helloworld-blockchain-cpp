@@ -3,10 +3,11 @@
 //
 
 #include "BlockDtoTool.h"
-#include "../../crypto/ByteUtil.h"
+#include "../../util/ByteUtil.h"
 #include "../../crypto/Sha256Util.h"
 #include "TransactionDtoTool.h"
 #include "../../crypto/MerkleTreeUtil.h"
+#include "../../util/StringUtil.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ string BlockDtoTool::calculateBlockHash(dto::BlockDto blockDto){
 string BlockDtoTool::calculateBlockMerkleTreeRoot(dto::BlockDto blockDto){
     vector<dto::TransactionDto> transactions = blockDto.transactions;
     vector<vector<unsigned char>> bytesTransactionHashs;
-    if(transactions.size()!=0){
+    if(!transactions.empty()){
         for(dto::TransactionDto transactionDto : transactions) {
             string transactionHash = TransactionDtoTool::calculateTransactionHash(transactionDto);
             vector<unsigned char> bytesTransactionHash = ByteUtil::hexStringToBytes(transactionHash);
@@ -31,4 +32,9 @@ string BlockDtoTool::calculateBlockMerkleTreeRoot(dto::BlockDto blockDto){
         }
     }
     return ByteUtil::bytesToHexString(MerkleTreeUtil::calculateMerkleTreeRoot(bytesTransactionHashs));
+}
+bool BlockDtoTool::isBlockEquals(dto::BlockDto block1, dto::BlockDto block2){
+    string block1Hash = calculateBlockHash(block1);
+    string block2Hash = calculateBlockHash(block2);
+    return StringUtil::equals(block1Hash, block2Hash);
 }

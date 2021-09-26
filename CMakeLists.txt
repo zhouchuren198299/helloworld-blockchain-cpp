@@ -11,12 +11,14 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 add_executable(
         ${project_name}
         main.cpp
-        crypto/Sha256Util.cpp crypto/Sha256Util.h crypto/Ripemd160Util.cpp crypto/Ripemd160Util.h crypto/ByteUtil.cpp crypto/ByteUtil.h crypto/Base58Util.cpp crypto/Base58Util.h crypto/AccountUtil.cpp crypto/AccountUtil.h crypto/MerkleTreeUtil.cpp crypto/MerkleTreeUtil.h
-        util/MathUtil.cpp util/MathUtil.h util/FileUtil.cpp util/FileUtil.h util/NetUtil.cpp util/NetUtil.h util/OperateSystemUtil.cpp util/OperateSystemUtil.h util/SystemUtil.cpp util/SystemUtil.h util/ThreadUtil.cpp util/ThreadUtil.h util/TimeUtil.cpp util/TimeUtil.h util/StringUtil.cpp util/StringUtil.h util/LogUtil.cpp util/LogUtil.h util/JsonUtil.cpp util/JsonUtil.h util/KvDbUtil.cpp util/KvDbUtil.h
-        core/tool/BlockTool.cpp core/tool/BlockTool.h core/tool/BlockDtoTool.cpp core/tool/BlockDtoTool.h core/tool/TransactionDtoTool.cpp core/tool/TransactionDtoTool.h core/tool/ScriptDtoTool.cpp core/tool/ScriptDtoTool.h
-        core/model/model.h
+        crypto/Sha256Util.cpp crypto/Sha256Util.h crypto/Ripemd160Util.cpp crypto/Ripemd160Util.h crypto/Base58Util.cpp crypto/Base58Util.h crypto/AccountUtil.cpp crypto/AccountUtil.h crypto/MerkleTreeUtil.cpp crypto/MerkleTreeUtil.h
+        util/ByteUtil.cpp util/ByteUtil.h  util/MathUtil.cpp util/MathUtil.h util/FileUtil.cpp util/FileUtil.h util/NetUtil.cpp util/NetUtil.h util/OperateSystemUtil.cpp util/OperateSystemUtil.h util/SystemUtil.cpp util/SystemUtil.h util/ThreadUtil.cpp util/ThreadUtil.h util/TimeUtil.cpp util/TimeUtil.h util/StringUtil.cpp util/StringUtil.h util/LogUtil.cpp util/LogUtil.h util/JsonUtil.cpp util/JsonUtil.h util/KvDbUtil.cpp util/KvDbUtil.h util/EncodeDecodeTool.cpp util/EncodeDecodeTool.h util/StringsUtil.cpp util/StringsUtil.h
+        core/model/model.cpp core/model/model.h
+        setting/BlockSetting.cpp setting/BlockSetting.h setting/GenesisBlockSetting.cpp setting/GenesisBlockSetting.h setting/IncentiveSetting.cpp setting/IncentiveSetting.h setting/NetworkSetting.cpp setting/NetworkSetting.h setting/ScriptSetting.cpp setting/ScriptSetting.h setting/TransactionSetting.cpp setting/TransactionSetting.h
         dto/dto.cpp dto/dto.h
-)
+        core/tool/BlockTool.cpp core/tool/BlockTool.h core/tool/BlockDtoTool.cpp core/tool/BlockDtoTool.h core/tool/TransactionDtoTool.cpp core/tool/TransactionDtoTool.h core/tool/ScriptDtoTool.cpp core/tool/ScriptDtoTool.h core/tool/BlockchainDatabaseKeyTool.cpp core/tool/BlockchainDatabaseKeyTool.h core/tool/Model2DtoTool.cpp core/tool/Model2DtoTool.h core/tool/DtoSizeTool.cpp core/tool/DtoSizeTool.h core/tool/ResourcePathTool.cpp core/tool/ResourcePathTool.h core/tool/SizeTool.cpp core/tool/SizeTool.h core/tool/ScriptTool.cpp core/tool/ScriptTool.h core/tool/StructureTool.cpp core/tool/StructureTool.h core/tool/TransactionTool.cpp core/tool/TransactionTool.h
+        core/VirtualMachine.cpp core/VirtualMachine.h core/Wallet.cpp core/Wallet.h core/UnconfirmedTransactionDatabase.cpp core/UnconfirmedTransactionDatabase.h core/Miner.cpp core/Miner.h core/Incentive.cpp core/Incentive.h core/CoreConfiguration.cpp core/CoreConfiguration.h core/Consensus.cpp core/Consensus.h core/BlockchainDatabase.cpp core/BlockchainDatabase.h core/BlockchainCore.cpp core/BlockchainCore.h core/BlockchainCoreFactory.cpp core/BlockchainCoreFactory.h
+        core/tool/NullTool.cpp core/tool/NullTool.h)
 
 include_directories(thirdpart/openssl/include thirdpart/leveldb/include)
 

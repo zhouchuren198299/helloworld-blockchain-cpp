@@ -4,26 +4,27 @@
 
 #include "OperateSystemUtil.h"
 
-#ifdef _WIN32
-# define PLATFORM_ID "Windows"
-#elif __APPLE__
-# define PLATFORM_ID "Mac"
-#elif __linux
-# define PLATFORM_ID "Linux"
-#else
-# define PLATFORM_ID "Unknow"
-#endif
-
-
 bool OperateSystemUtil::isWindowsOperateSystem(){
-     return PLATFORM_ID ==  "Windows";
+    #ifdef _WIN32
+        return true;
+    #else
+        return false;
+    #endif
 }
 
 bool OperateSystemUtil::isMacOperateSystem(){
-    return PLATFORM_ID ==  "Mac";
+    #ifdef __APPLE__
+        return true;
+    #else
+        return false;
+    #endif
 }
 
 bool OperateSystemUtil::isLinuxOperateSystem(){
-    return PLATFORM_ID == "Linux";
+    #ifdef __linux
+        return true;
+    #else
+        return false;
+    #endif
 }
 

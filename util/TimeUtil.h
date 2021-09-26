@@ -5,12 +5,14 @@
 #ifndef HELLOWORLD_BLOCKCHAIN_CPP_TIMEUTIL_H
 #define HELLOWORLD_BLOCKCHAIN_CPP_TIMEUTIL_H
 
+
 #include <string>
 using namespace std;
 
 namespace TimeUtil {
-    unsigned long long millisecondTimestamp();
-    string formatMillisecondTimestamp(unsigned long long millisecondTimestamp);
+
+    uint64_t millisecondTimestamp();
+    string formatMillisecondTimestamp(uint64_t millisecondTimestamp);
 };
 
 

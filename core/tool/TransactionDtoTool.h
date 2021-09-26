@@ -8,10 +8,33 @@
 #include "../../dto/dto.h"
 
 using namespace std;
+using namespace dto;
 
 namespace TransactionDtoTool {
-    string calculateTransactionHash(dto::TransactionDto transactionDto);
-};
+    /**
+     * 获取待签名数据
+     */
+    string signatureHashAll(TransactionDto transactionDto);
+
+    /**
+     * 交易签名
+     */
+    string signature(string privateKey, TransactionDto transactionDto);
+
+
+    string calculateTransactionHash(TransactionDto transactionDto);
+
+    //region 序列化与反序列化
+    /**
+     * 序列化。将交易转换为字节数组，要求生成的字节数组反过来能还原为原始交易。
+     */
+    vector<unsigned char> bytesTransaction(TransactionDto transactionDto, bool omitInputScript);
+    bool verifySignature(TransactionDto transaction, string publicKey, vector<unsigned char> bytesSignature) ;
+
+}
+
+    
+
 
 
 #endif //HELLOWORLD_BLOCKCHAIN_CPP_TRANSACTIONDTOTOOL_H

@@ -15,6 +15,7 @@ namespace BlockDtoTool {
 
     string calculateBlockHash(dto::BlockDto blockDto);
     string calculateBlockMerkleTreeRoot(dto::BlockDto blockDto);
+    bool isBlockEquals(dto::BlockDto block1, dto::BlockDto block2);
 };
 
 

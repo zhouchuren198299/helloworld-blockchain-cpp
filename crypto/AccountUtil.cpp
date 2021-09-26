@@ -3,7 +3,7 @@
 //
 
 #include "AccountUtil.h"
-#include "ByteUtil.h"
+#include "../util/ByteUtil.h"
 #include "Ripemd160Util.h"
 #include "Sha256Util.h"
 #include "Base58Util.h"
@@ -138,7 +138,7 @@ string AccountUtil::addressFromPublicKeyHash(string publicKeyHash){
     vector<unsigned char> bytesPublicKeyHash = ByteUtil::hexStringToBytes(publicKeyHash);
     return base58AddressFromPublicKeyHash0(bytesPublicKeyHash);
 }
-vector<unsigned char> AccountUtil::signature(string privateKey, vector<unsigned char> bytesMessage){
+string AccountUtil::signature(string privateKey, vector<unsigned char> bytesMessage){
     BIGNUM *bignumPrivateKey = BN_new();
     BN_hex2bn(&bignumPrivateKey, privateKey.c_str());
 
@@ -155,7 +155,7 @@ vector<unsigned char> AccountUtil::signature(string privateKey, vector<unsigned 
     unsigned int siglen;
     ECDSA_sign(0,&bytesMessage[0],bytesMessage.size(),&sig[0],&siglen,ecKey);
     vector<unsigned char> ret = ByteUtil::copy(sig,0,siglen);
-    return ret;
+    return ByteUtil::bytesToHexString(ret);
 }
 bool AccountUtil::verifySignature(string publicKey, vector<unsigned char> bytesMessage, vector<unsigned char> bytesSignature){
     EC_GROUP *ecGroup = EC_GROUP_new_by_curve_name(NID_secp256k1);
@@ -176,5 +176,23 @@ bool AccountUtil::isPayToPublicKeyHashAddress(string address){
     vector<unsigned char> bytesPublicKeyHash(20);
     ByteUtil::copyTo(bytesAddress, 1, 20, bytesPublicKeyHash, 0);
     string base58Address = addressFromPublicKeyHash(ByteUtil::bytesToHexString(bytesPublicKeyHash));
-    return StringUtil::isEquals(base58Address,address);
+    return StringUtil::equals(base58Address, address);
+}
+
+
+
+
+void to_json(json& j, const Account& p){
+    j = json{
+            { "privateKey", p.privateKey },
+            { "publicKey", p.publicKey },
+            { "publicKeyHash", p.publicKeyHash },
+            { "address", p.address }
+    };
+}
+void from_json(const json& j, Account& p){
+    j.at("privateKey").get_to(p.privateKey);
+    j.at("publicKey").get_to(p.publicKey);
+    j.at("publicKeyHash").get_to(p.publicKeyHash);
+    j.at("address").get_to(p.address);
 }

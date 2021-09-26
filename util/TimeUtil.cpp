@@ -23,7 +23,7 @@ using namespace std;
 #endif
 
 #if defined _WIN32 || defined _WIN64
-unsigned long long TimeUtil::millisecondTimestamp(){
+uint64_t TimeUtil::millisecondTimestamp(){
     string nowTimeUnix;
     string cs_uninxtime;
     string cs_milliseconds;
@@ -38,14 +38,14 @@ unsigned long long TimeUtil::millisecondTimestamp(){
     return _atoi64(nowTimeUnix.c_str());
 }
 #else
-unsigned long long TimeUtil::millisecondTimestamp(){
-    long ms = duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
+uint64_t TimeUtil::millisecondTimestamp(){
+    uint64_t ms = duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
     return ms ;
 }
 #endif
 
 
-string TimeUtil::formatMillisecondTimestamp(unsigned long long millisecondTimestamp){
+string TimeUtil::formatMillisecondTimestamp(uint64_t millisecondTimestamp){
     time_t t = time_t(millisecondTimestamp/1000);
     char tmp[64];
     strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S",localtime(&t) );

@@ -25,13 +25,15 @@
 static bool isExist(char *path) {
 #if defined _WIN32 || defined _WIN64
 	if (_access(path, 0) == 0) {
+        return true;
+    }
+    return false;
 #else
 	if (access(path, 0) == 0) {
-#endif
-		return true;
+        return true;
 	}
-
 	return false;
+#endif
 }
 
 static void removeDirectory() {
@@ -124,9 +126,8 @@ void FileUtil::deleteDirectory(string path) {
 
 		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 			deleteDirectory((path + "\\" + findData.cFileName).c_str());
-		}
-		else {
-			if (DeleteFileA((path + "\\" + findData.cFileName).c_str())) {
+		} else {
+			if (!DeleteFileA((path + "\\" + findData.cFileName).c_str())) {
 				cout << "delete : " << path + "\\" + findData.cFileName << " fail !" << endl;
 				exit(-1);
 			}
@@ -137,7 +138,7 @@ void FileUtil::deleteDirectory(string path) {
 		FindClose(hFind);
 	}
 
-	if (RemoveDirectoryA(path.c_str())) {
+	if (!RemoveDirectoryA(path.c_str())) {
 		cout << "delete : " << path << " fail !" << endl;
 		exit(-1);
 	}
@@ -161,19 +162,18 @@ void FileUtil::deleteDirectory(string path) {
 }
 
 string FileUtil::read(string path){
-    ifstream myfile(path);
+    ifstream ifs(path);
     string text;
     string temp;
-    if (!myfile.is_open())
+    if (!ifs.is_open())
     {
-        cout << "未成功打开文件" << endl;
-        throw exception("未成功打开文件");
+        throw exception("open file error");
     }
-    while(getline(myfile,temp))
+    while(getline(ifs,temp))
     {
         text = text + temp;
     }
-    myfile.close();
+    ifs.close();
     return text;
 }
 

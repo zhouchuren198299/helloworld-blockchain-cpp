@@ -7,7 +7,9 @@
 
 using namespace std;
 namespace ThreadUtil {
-    void millisecondSleep(long millisecond);
+
+    void millisecondSleep(uint64_t millisecond);
+
 };
 
 

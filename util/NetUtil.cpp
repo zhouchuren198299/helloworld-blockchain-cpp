@@ -7,7 +7,6 @@
 
 
 string  NetUtil::get(string requestUrl, string requestBody){
-    // HTTP
     httplib::Client cli(requestUrl);
     if (auto res = cli.Post("/" ,requestBody,"application/json")) {
         if (res->status == 200) {
