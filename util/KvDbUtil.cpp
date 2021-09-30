@@ -4,15 +4,15 @@
 
 #include "KvDbUtil.h"
 #include <leveldb/db.h>
-#include <iostream>
 #include "leveldb/write_batch.h"
+#include <iostream>
 
 
 namespace KvDbUtil{
     void KvWriteBatch::delete0(vector<unsigned char> key) {
         KvWrite kvWrite;
         kvWrite.key = key;
-        kvWrite.kvWriteAction = KvWriteAction::DELETE;
+        kvWrite.kvWriteAction = KvWriteAction::DELETE00;
         this->kvWrites.push_back(kvWrite);
     }
 
@@ -20,7 +20,7 @@ namespace KvDbUtil{
         KvWrite kvWrite;
         kvWrite.key = key;
         kvWrite.value = value;
-        kvWrite.kvWriteAction = KvWriteAction::ADD;
+        kvWrite.kvWriteAction = KvWriteAction::ADD00;
         this->kvWrites.push_back(kvWrite);
     }
 
@@ -35,9 +35,9 @@ namespace KvDbUtil{
             std::string key(kvWrite.key.begin(), kvWrite.key.end());
             std::string value(kvWrite.value.begin(), kvWrite.value.end());
 
-            if(kvWrite.kvWriteAction == KvWriteAction::ADD){
+            if(kvWrite.kvWriteAction == KvWriteAction::ADD00){
                 writeBatch.Put(key,value);
-            } else if(kvWrite.kvWriteAction == KvWriteAction::DELETE){
+            } else if(kvWrite.kvWriteAction == KvWriteAction::DELETE00){
                 writeBatch.Delete(key);
             }
         }

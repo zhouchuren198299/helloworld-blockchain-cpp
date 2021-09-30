@@ -79,8 +79,7 @@ namespace StructureTool{
                 return false;
             }
         }else {
-            LogUtil::debug("交易数据异常：不能识别的交易的类型。");
-            return false;
+            throw exception();
         }
         //校验输入脚本
         vector<TransactionInput> inputs = transaction->inputs;

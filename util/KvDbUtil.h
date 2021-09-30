@@ -15,7 +15,7 @@ using namespace std;
 namespace KvDbUtil {
 
     enum KvWriteAction {
-        ADD,DELETE
+        ADD00,DELETE00
     };
     class KvWrite{
     public:

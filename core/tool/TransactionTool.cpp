@@ -57,8 +57,7 @@ namespace TransactionTool{
         }else if(transaction->transactionType == TransactionTypeEnum::GENESIS_TRANSACTION){
             return 0L;
         }else{
-            SystemUtil::errorExit("不能识别的交易类型", exception{});
-            return 0L;
+            throw exception();
         }
     }
     /**
@@ -70,8 +69,7 @@ namespace TransactionTool{
         }else if(transaction->transactionType == TransactionTypeEnum::GENESIS_TRANSACTION){
             return 0L;
         }else {
-            SystemUtil::errorExit("不能识别的交易类型", exception{});
-            return 0L;
+            throw exception();
         }
     }
 
@@ -144,8 +142,7 @@ namespace TransactionTool{
             }
             return true;
         } else {
-            LogUtil::debug("区块数据异常，不能识别的交易类型。");
-            return false;
+            throw exception();
         }
         return true;
     }
@@ -217,7 +214,7 @@ namespace TransactionTool{
             uint64_t outputsValue = getOutputValue(transaction);
             return inputsValue - outputsValue;
         }else {
-            throw new exception("没有该交易类型。");
+            throw exception();
         }
     }
 

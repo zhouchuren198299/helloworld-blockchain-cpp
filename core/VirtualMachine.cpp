@@ -48,7 +48,7 @@ namespace core{
                 if(!verifySignatureSuccess){
                     throw new exception("脚本执行失败");
                 }
-                stack.push(ByteUtil::bytesToHexString(BooleanCodeEnum::TRUE.code));
+                stack.push(ByteUtil::bytesToHexString(BooleanCodeEnum::TRUE00.code));
             }else if(ByteUtil::equals(OperationCodeEnum::OP_PUSHDATA.code,bytesOperationCode)){
                 if(script.size()<i+2){
                     throw new exception("指令运行异常");

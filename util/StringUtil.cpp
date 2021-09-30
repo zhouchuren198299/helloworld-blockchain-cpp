@@ -2,14 +2,14 @@
 // Created by 40906 on 2021/9/12.
 //
 
-#include <iostream>
 #include "StringUtil.h"
+
 
 bool StringUtil::equals(string str1, string str2){
     return str1.compare(str2) == 0;
 }
 
-bool StringUtil::isNullOrEmpty(string str){
+bool StringUtil::isEmpty(string str){
     return str.empty() ;
 }
 

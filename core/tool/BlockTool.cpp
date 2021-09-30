@@ -188,7 +188,7 @@ namespace BlockTool {
                     uint64_t fee = TransactionTool::getTransactionFee(&transaction);
                     blockFee += fee;
                 }else{
-                    throw new exception("不能识别的交易类型");
+                    throw new exception();
                 }
             }
         }

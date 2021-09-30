@@ -29,6 +29,10 @@ namespace JsonUtil {
     {
         const json j{object};
         const string jsonString = j[0].dump(4);
+        //TODO
+        if("null" == jsonString){
+            return "{}";
+        }
         return jsonString;
     }
 };

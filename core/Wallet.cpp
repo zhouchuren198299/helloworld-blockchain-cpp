@@ -95,7 +95,7 @@ namespace core{
             return response;
         }
         for(Payee payee : nonChangePayees){
-            if(StringUtil::isNullOrEmpty(payee.address)){
+            if(StringUtil::isEmpty(payee.address)){
                 AutoBuildTransactionResponse response;
                 response.buildTransactionSuccess=false;
                 response.message=PayAlert::PAYEE_ADDRESS_CAN_NOT_EMPTY;

@@ -8,7 +8,9 @@
 #include <vector>
 using namespace std;
 
+
 namespace MerkleTreeUtil {
+
     vector<unsigned char> calculateMerkleTreeRoot(vector<vector<unsigned char>> datas);
 };
 

@@ -13,7 +13,7 @@ using namespace std;
 namespace StringUtil {
     const string BLANKSPACE = " ";
     bool equals(string str1, string str2);
-    bool isNullOrEmpty(string str);
+    bool isEmpty(string str);
     string prefixPadding(string rawValue,int targetLength,string paddingValue);
     string concatenate(string str1,string str2);
     string concatenate3(string str1, string str2, string str3);

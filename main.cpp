@@ -13,7 +13,11 @@
 #include "core/BlockchainCore.h"
 #include "core/BlockchainCoreFactory.h"
 #include "util/ThreadUtil.h"
+#include "util/SystemUtil.h"
 #include "core/tool/NullTool.h"
+#include "netcore/netcoreconfiguration/NetCoreConfiguration.h"
+#include "netcore/netcoreservice/NodeService.h"
+#include "netcore/netcoreserver/NodeServer.h"
 #include <assert.h>
 
 using json = nlohmann::json;
@@ -22,9 +26,25 @@ using namespace std;
 using namespace dto;
 using namespace core;
 using namespace BlockchainCoreFactory;
-
+using namespace netcoreconfiguration;
+using namespace service;
+using namespace server;
 
 #if 1
+int main()
+{
+    BlockchainCore *blockchainCore = BlockchainCoreFactory::createBlockchainCore(ResourcePathTool::getTestDataRootPath());
+    NetCoreConfiguration netCoreConfiguration = NetCoreConfiguration(ResourcePathTool::getTestDataRootPath());
+    NodeDao nodeDao = NodeDao(&netCoreConfiguration);
+    NodeService nodeService = NodeService(&nodeDao);
+    NodeServer nodeServer = NodeServer(&netCoreConfiguration,blockchainCore,&nodeService);
+    nodeServer.start();
+}
+#endif
+
+
+
+#if 0
 int main()
 {
     FileUtil::deleteDirectory(ResourcePathTool::getTestDataRootPath());
@@ -109,13 +129,11 @@ int main()
     FileUtil::deleteDirectory(ResourcePathTool::getTestDataRootPath());
     BlockchainCore *blockchainCore = BlockchainCoreFactory::createBlockchainCore(ResourcePathTool::getTestDataRootPath());
 
-    //FileUtil::makeDirectory(ResourcePathTool::getTestDataRootPath());
-    //string stringBlock1 = FileUtil::read(SystemUtil::systemRootDirectory()+"\\helloworld-blockchain-core"+"\\src\\test\\resources\\blocks\\block1.json");
-    string stringBlock1 = FileUtil::read("D:\\workspace\\idea\\helloworld-blockchain-java\\helloworld-blockchain-core\\src\\test\\resources\\blocks\\block1.json");
+    string stringBlock1 = FileUtil::read(SystemUtil::systemRootDirectory()+"\\core"+"\\test\\resources\\blocks\\block1.json");
     BlockDto blockDto1 = JsonUtil::toObject(stringBlock1, BlockDto{});
-    string stringBlock2 = FileUtil::read("D:\\workspace\\idea\\helloworld-blockchain-java\\helloworld-blockchain-core\\src\\test\\resources\\blocks\\block2.json");
+    string stringBlock2 = FileUtil::read(SystemUtil::systemRootDirectory()+"\\core"+"\\test\\resources\\blocks\\block2.json");
     BlockDto blockDto2 = JsonUtil::toObject(stringBlock2, BlockDto{});
-    string stringBlock3 = FileUtil::read("D:\\workspace\\idea\\helloworld-blockchain-java\\helloworld-blockchain-core\\src\\test\\resources\\blocks\\block3.json");
+    string stringBlock3 = FileUtil::read(SystemUtil::systemRootDirectory()+"\\core"+"\\test\\resources\\blocks\\block3.json");
     BlockDto blockDto3 = JsonUtil::toObject(stringBlock3, BlockDto{});
 
     string block1Hash = "e213eaae8259e1aca2044f35036ec5fc3c4370a33fa28353a749e8257e1d2e9e";
@@ -167,8 +185,8 @@ int main()
     cout << TimeUtil::millisecondTimestamp() << endl;
     cout << TimeUtil::formatMillisecondTimestamp(TimeUtil::millisecondTimestamp()) << endl;
 
-    string text = FileUtil::read("D:\\workspace\\idea\\helloworld-blockchain-java\\helloworld-blockchain-core\\src\\test\\resources\\blocks\\block1.json") ;
-    dto::BlockDto blockDto = JsonUtil::toObject(text,dto::BlockDto{});
+    string stringBlock1 = FileUtil::read(SystemUtil::systemRootDirectory()+"\\core"+"\\test\\resources\\blocks\\block1.json");
+    dto::BlockDto blockDto = JsonUtil::toObject(stringBlock1,dto::BlockDto{});
     cout << "blockDto..." << JsonUtil::toString(blockDto) << endl;
 }
 #endif

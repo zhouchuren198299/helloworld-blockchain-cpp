@@ -10,7 +10,9 @@ using namespace std;
 
 
 namespace Ripemd160Util{
+
     vector<unsigned char> digest(vector<unsigned char> input);
 }
+
 
 #endif //UNTITLED_RIPEMD160UTIL_H

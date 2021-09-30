@@ -11,8 +11,8 @@ namespace model{
     }
 
     namespace BooleanCodeEnum{
-        BooleanCode FALSE{{0x00},"false"};
-        BooleanCode TRUE{{0x01},"true"};
+        BooleanCode FALSE00{{0x00},"false"};
+        BooleanCode TRUE00{{0x01}, "true"};
     }
 
     namespace OperationCodeEnum{

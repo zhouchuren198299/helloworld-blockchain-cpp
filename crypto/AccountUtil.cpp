@@ -2,12 +2,12 @@
 // Created by 40906 on 2021/9/12.
 //
 
-#include "AccountUtil.h"
 #include "../util/ByteUtil.h"
+#include "../util/StringUtil.h"
+#include "AccountUtil.h"
 #include "Ripemd160Util.h"
 #include "Sha256Util.h"
 #include "Base58Util.h"
-#include "../util/StringUtil.h"
 #include <string>
 #include <stdio.h>
 #include <iostream>
@@ -126,10 +126,6 @@ string AccountUtil::publicKeyHashFromAddress(string address){
 }
 
 
-string AccountUtil::addressFromPrivateKey(string privateKey){
-    Account account = accountFromPrivateKey(privateKey);
-    return addressFromPublicKey(account.publicKey);
-}
 string AccountUtil::addressFromPublicKey(string publicKey) {
     string publicKeyHash = publicKeyHashFromPublicKey(publicKey);
     return base58AddressFromPublicKeyHash0(ByteUtil::hexStringToBytes(publicKeyHash));

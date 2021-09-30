@@ -4,11 +4,7 @@
 
 #include "Base58Util.h"
 #include <vector>
-#include <random>
 #include <string>
-#include <iomanip>
-#include <iostream>
-#include "../util/ByteUtil.h"
 
 static constexpr const uint8_t Base58Map[] = {
         '1', '2', '3', '4', '5', '6', '7', '8',
@@ -83,22 +79,26 @@ std::vector<uint8_t> Base58Decode(const std::string& data, CodecMapping mapping)
 }
 
 
-string Base58Util::encode(vector<unsigned char> input) {
-    CodecMapping mapping(AlphaMap, Base58Map);
-    std::string encoded_data = Base58Encode(input, mapping);
-    return encoded_data;
+namespace Base58Util{
+
+    string encode(vector<unsigned char> input) {
+        CodecMapping mapping(AlphaMap, Base58Map);
+        std::string encoded_data = Base58Encode(input, mapping);
+        return encoded_data;
+    }
+    vector<unsigned char> decode(string input) {
+        CodecMapping mapping(AlphaMap, Base58Map);
+        std::vector<unsigned char> decoded_data = Base58Decode(input, mapping);
+        return decoded_data;
+    }
 }
-vector<unsigned char> Base58Util::decode(string input) {
-    CodecMapping mapping(AlphaMap, Base58Map);
-    std::vector<unsigned char> decoded_data = Base58Decode(input, mapping);
-    return decoded_data;
-}
 
 
 
 
+#if 0
 // Fuzz Testing the Encoder & Decoder
-int main_base58util(int argc, char** argv)
+int main(int argc, char** argv)
 {
     std::random_device device;
     std::mt19937 generator(device());
@@ -149,3 +149,4 @@ int main_base58util(int argc, char** argv)
     std::cout << "Passed Tests: " << std::dec << static_cast<int>(passed) << std::endl;
     return 0;
 }
+#endif

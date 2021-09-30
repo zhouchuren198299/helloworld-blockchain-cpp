@@ -25,12 +25,12 @@ namespace core{
     bool Consensus::
     checkConsensus(BlockchainDatabase *blockchainDatabase, Block *block) {
         string difficulty = block->difficulty;
-        if(StringUtil::isNullOrEmpty(difficulty)){
+        if(StringUtil::isEmpty(difficulty)){
             difficulty = calculateDifficult(blockchainDatabase,block);
         }
 
         string hash = block->hash;
-        if(StringUtil::isNullOrEmpty(hash)){
+        if(StringUtil::isEmpty(hash)){
             hash = BlockTool::calculateBlockHash(block);
         }
         return ByteUtil::greatThan(difficulty,hash);

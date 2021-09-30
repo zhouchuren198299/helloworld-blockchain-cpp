@@ -3,17 +3,17 @@
 //
 
 #include "Ripemd160Util.h"
-#include <iostream>
-#include <string>
 #include <openssl/ripemd.h>
-#include "Sha256Util.h"
-#include "../util/ByteUtil.h"
 #include <vector>
 using namespace std;
 
-vector<unsigned char> Ripemd160Util::digest(vector<unsigned char> input)
-{
-    vector<unsigned char> result(20);
-    RIPEMD160(&input[0], input.size(), &result[0]);
-    return result;
+
+namespace Ripemd160Util{
+
+    vector<unsigned char> digest(vector<unsigned char> input)
+    {
+        vector<unsigned char> result(20);
+        RIPEMD160(&input[0], input.size(), &result[0]);
+        return result;
+    }
 }

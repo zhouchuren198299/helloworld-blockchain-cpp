@@ -32,8 +32,8 @@ namespace model {
             vector<unsigned char> code;
             string name;
         };
-        extern BooleanCode FALSE;
-        extern BooleanCode TRUE;
+        extern BooleanCode FALSE00;
+        extern BooleanCode TRUE00;
     }
     namespace OperationCodeEnum
     {

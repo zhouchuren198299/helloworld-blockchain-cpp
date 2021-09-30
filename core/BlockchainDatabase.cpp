@@ -44,6 +44,8 @@ namespace core{
         Block block = blockDto2Block(blockDto);
         bool checkBlock0 = checkBlock(&block);
         if(!checkBlock0){
+            //TODO
+            mutex.unlock();
             return false;
         }
         KvWriteBatch kvWriteBatch = createBlockWriteBatch(&block, ADD_BLOCK);
@@ -1000,7 +1002,7 @@ namespace core{
                     //执行脚本
                     ScriptExecuteResult scriptExecuteResult = virtualMachine->executeScript(*transaction,script);
                     //脚本执行结果是个栈，如果栈有且只有一个元素，且这个元素是0x01，则解锁成功。
-                    bool executeSuccess = scriptExecuteResult.size()==1 && ByteUtil::equals(BooleanCodeEnum::TRUE.code,ByteUtil::hexStringToBytes(scriptExecuteResult.top()));
+                    bool executeSuccess = scriptExecuteResult.size()==1 && ByteUtil::equals(BooleanCodeEnum::TRUE00.code, ByteUtil::hexStringToBytes(scriptExecuteResult.top()));
                     if(!executeSuccess){
                         return false;
                     }

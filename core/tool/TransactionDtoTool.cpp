@@ -184,7 +184,7 @@ vector<TransactionInputDto> transactionInputDtos(vector<unsigned char> *bytesTra
     return transactionInputDtos;
 }
 TransactionInputDto transactionInputDto(vector<unsigned char> bytesTransactionInputDto, bool omitInputScript) {
-    int start = 0;
+    uint64_t start = 0;
     uint64_t bytesTransactionHashLength = ByteUtil::bytesToUint64(ByteUtil::copy(bytesTransactionInputDto,start,start + ByteUtil::BYTE8_BYTE_COUNT));
     start += ByteUtil::BYTE8_BYTE_COUNT;
     vector<unsigned char> bytesTransactionHash = ByteUtil::copy(bytesTransactionInputDto,start, start+(int) bytesTransactionHashLength);

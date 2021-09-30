@@ -11,6 +11,7 @@
 using json = nlohmann::json;
 using namespace std;
 
+
 struct Account{
     string privateKey;
     string publicKey;
@@ -21,14 +22,15 @@ struct Account{
 void to_json(json& j, const Account& p);
 void from_json(const json& j, Account& p);
 
+
 namespace AccountUtil {
+
     Account randomAccount();
     Account accountFromPrivateKey(string privateKey);
 
     string publicKeyHashFromPublicKey(string publicKey);
     string publicKeyHashFromAddress(string address);
 
-    string addressFromPrivateKey(string privateKey);
     string addressFromPublicKey(string privateKey);
     string addressFromPublicKeyHash(string publicKeyHash);
 
