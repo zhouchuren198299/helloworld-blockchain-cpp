@@ -3,11 +3,10 @@
 //
 
 #include "UnconfirmedTransactionsSearcher.h"
-#include "../core/tool/NullTool.h"
-#include "../core/tool/Model2DtoTool.h"
 #include "../netcoreclient/NodeClient.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
+#include "../util/NullUtil.h"
 
 using namespace netcoreclient;
 
@@ -41,11 +40,11 @@ namespace netcore{
         for(Node node:nodes){
             NodeClient nodeClient(node.ip);
             GetUnconfirmedTransactionsRequest getUnconfirmedTransactionsRequest;
-            GetUnconfirmedTransactionsResponse getUnconfirmedTransactionsResponse = nodeClient.getUnconfirmedTransactions(getUnconfirmedTransactionsRequest);
-/*TODO            if(getUnconfirmedTransactionsResponse == null){
+            unique_ptr<GetUnconfirmedTransactionsResponse> getUnconfirmedTransactionsResponse = nodeClient.getUnconfirmedTransactions(getUnconfirmedTransactionsRequest);
+            if(!getUnconfirmedTransactionsResponse.get()){
                 continue;
-            }*/
-            vector<TransactionDto> transactions = getUnconfirmedTransactionsResponse.transactions;
+            }
+            vector<TransactionDto> &transactions = getUnconfirmedTransactionsResponse->transactions;
             if(transactions .empty()){
                 continue;
             }

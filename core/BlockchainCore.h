@@ -22,9 +22,6 @@ namespace core{
         BlockchainCore(CoreConfiguration *coreConfiguration, BlockchainDatabase *blockchainDatabase,
                        UnconfirmedTransactionDatabase *unconfirmedTransactionDatabase, Wallet *wallet, Miner *miner);
 
-        //TODO 删除
-        //void BlockchainCore::startBlockchainCore();
-
         /**
          * 激活区块链核心。包含激活矿工等操作。
          */

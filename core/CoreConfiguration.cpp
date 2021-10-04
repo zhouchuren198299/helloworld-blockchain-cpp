@@ -86,6 +86,8 @@ namespace core{
     }
 
     CoreConfiguration::CoreConfiguration(string corePath) {
+        //TODO
+        FileUtil::makeDirectory(corePath);
         this->corePath = corePath;
     }
 }

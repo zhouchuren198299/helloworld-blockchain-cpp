@@ -6,6 +6,7 @@
 #include "../netcoreclient/NodeClient.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
+#include "../util/NullUtil.h"
 
 using namespace netcoreclient;
 
@@ -15,6 +16,7 @@ namespace netcore{
 
     NodeCleaner::NodeCleaner(NetCoreConfiguration *netCoreConfiguration, NodeService *nodeService){
         this->netCoreConfiguration = netCoreConfiguration;
+        this->nodeService = nodeService;
     }
 
     void NodeCleaner::start(){
@@ -37,12 +39,11 @@ namespace netcore{
         for(Node node:nodes){
             NodeClient nodeClient(node.ip);
             PingRequest pingRequest;
-            PingResponse pingResponse = nodeClient.pingNode(pingRequest);
-            //TODO
-/*            if(pingResponse == null){
+            unique_ptr<PingResponse> pingResponse = nodeClient.pingNode(pingRequest);
+            if(!pingResponse.get()){
                 nodeService->deleteNode(node.ip);
                 LogUtil::debug("节点清理器发现死亡节点["+node.ip+"]，已在节点数据库中将该节点删除了。");
-            }*/
+            }
         }
     }
 

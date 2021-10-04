@@ -5,10 +5,9 @@
 #include "BlockSearcher.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
-#include "../util/NullsTool.h"
+#include "../util/NullUtil.h"
 #include "../core/tool/TransactionTool.h"
 #include "../core/tool/BlockTool.h"
-#include "../core/tool/NullTool.h"
 #include "../core/tool/Model2DtoTool.h"
 #include "../core/tool/BlockDtoTool.h"
 #include "../netcoreclient/NodeClient.h"
@@ -98,7 +97,7 @@ namespace netcore{
         //删除'去向区块链核心'区块
         while (true){
             Block toBlockchainTailBlock = toBlockchainCore->queryTailBlock() ;
-            if(NullTool::isNullBlock(toBlockchainTailBlock)){
+            if(NullUtil::isNullBlock(toBlockchainTailBlock)){
                 break;
             }
             Block fromBlockchainBlock = fromBlockchainCore->queryBlockByBlockHeight(toBlockchainTailBlock.height);
@@ -111,7 +110,7 @@ namespace netcore{
         while (true){
             long toBlockchainHeight = toBlockchainCore->queryBlockchainHeight();
             Block nextBlock = fromBlockchainCore->queryBlockByBlockHeight(toBlockchainHeight+1) ;
-            if(NullTool::isNullBlock(nextBlock)){
+            if(NullUtil::isNullBlock(nextBlock)){
                 break;
             }
             toBlockchainCore->addBlock(&nextBlock);
@@ -146,12 +145,12 @@ namespace netcore{
             GetBlockRequest getBlockRequest{};
             getBlockRequest.blockHeight=forkBlockHeight;
             NodeClient nodeClient(node.ip);
-            GetBlockResponse getBlockResponse = nodeClient.getBlock(getBlockRequest);
-            if(NullsTool::isNullBlockGetBlockResponse(getBlockResponse)){
+            unique_ptr<GetBlockResponse> getBlockResponse = nodeClient.getBlock(getBlockRequest);
+            if(!getBlockResponse.get()){
                 break;
             }
-            BlockDto remoteBlock = getBlockResponse.block;
-            if(NullsTool::isNullBlockDto(remoteBlock)){
+            BlockDto &remoteBlock = getBlockResponse->block;
+            if(NullUtil::isNullBlockDto(remoteBlock)){
                 break;
             }
             Block localBlock = blockchainCore->queryBlockByBlockHeight(forkBlockHeight);
@@ -169,12 +168,12 @@ namespace netcore{
             GetBlockRequest getBlockRequest;
             getBlockRequest.blockHeight=startBlockHeight;
             NodeClient nodeClient(node.ip);
-            GetBlockResponse getBlockResponse = nodeClient.getBlock(getBlockRequest);
-            if(NullsTool::isNullBlockGetBlockResponse(getBlockResponse)){
+            unique_ptr<GetBlockResponse> getBlockResponse = nodeClient.getBlock(getBlockRequest);
+            if(!getBlockResponse.get()){
                 break;
             }
-            BlockDto remoteBlock = getBlockResponse.block;
-            if(NullsTool::isNullBlockDto(remoteBlock)){
+            BlockDto remoteBlock = getBlockResponse->block;
+            if(NullUtil::isNullBlockDto(remoteBlock)){
                 break;
             }
             boolean isAddBlockSuccess = blockchainCore->addBlockDto(&remoteBlock);
@@ -187,19 +186,19 @@ namespace netcore{
 
     bool BlockSearcher::isForkNode(BlockchainCore *blockchainCore, Node node) {
         Block block = blockchainCore->queryTailBlock();
-        if(NullTool::isNullBlock(block)){
+        if(NullUtil::isNullBlock(block)){
             return false;
         }
         GetBlockRequest getBlockRequest;
         getBlockRequest.blockHeight=block.height;
         NodeClient nodeClient(node.ip);
-        GetBlockResponse getBlockResponse = nodeClient.getBlock(getBlockRequest);
+        unique_ptr<GetBlockResponse> getBlockResponse = nodeClient.getBlock(getBlockRequest);
         //没有查询到区块，这里则认为远程节点没有该高度的区块存在，远程节点的高度没有本地区块链高度高，所以不分叉。
-        if(NullsTool::isNullBlockGetBlockResponse(getBlockResponse)){
+        if(!getBlockResponse.get()){
             return false;
         }
-        BlockDto blockDto = getBlockResponse.block;
-        if(NullsTool::isNullBlockDto(blockDto)){
+        BlockDto &blockDto = getBlockResponse->block;
+        if(NullUtil::isNullBlockDto(blockDto)){
             return false;
         }
         string blockHash = BlockDtoTool::calculateBlockHash(blockDto);
@@ -240,12 +239,12 @@ namespace netcore{
         GetBlockRequest getBlockRequest{};
         getBlockRequest.blockHeight=criticalPointBlocHeight;
         NodeClient nodeClient(node.ip);
-        GetBlockResponse getBlockResponse = nodeClient.getBlock(getBlockRequest);
-        if(NullsTool::isNullBlockGetBlockResponse(getBlockResponse)){
+        unique_ptr<GetBlockResponse> getBlockResponse = nodeClient.getBlock(getBlockRequest);
+        if(!getBlockResponse.get()){
             return false;
         }
-        BlockDto remoteBlock = getBlockResponse.block;
-        if(NullsTool::isNullBlockDto(remoteBlock)){
+        BlockDto &remoteBlock = getBlockResponse->block;
+        if(NullUtil::isNullBlockDto(remoteBlock)){
             return false;
         }
         Block localBlock = blockchainCore->queryBlockByBlockHeight(criticalPointBlocHeight);

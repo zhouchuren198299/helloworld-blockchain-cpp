@@ -9,8 +9,9 @@
 #include "../util/ByteUtil.h"
 #include "../util/LogUtil.h"
 #include "../util/StringUtil.h"
+#include "../util/NullUtil.h"
+
 #include "tool/Model2DtoTool.h"
-#include "tool/NullTool.h"
 #include "tool/ScriptTool.h"
 #include "../setting/BlockSetting.h"
 #include "tool/SizeTool.h"
@@ -116,7 +117,7 @@ namespace core{
         //这个挖矿时间不需要特别精确，没必要非要挖出矿的前一霎那时间。
         nonNonceBlock.timestamp=timestamp;
 
-        if(NullTool::isNullBlock(tailBlock)){
+        if(NullUtil::isNullBlock(tailBlock)){
             nonNonceBlock.height=GenesisBlockSetting::HEIGHT +1;
             nonNonceBlock.previousHash=GenesisBlockSetting::HASH;
         } else {

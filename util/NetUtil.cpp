@@ -7,15 +7,18 @@
 
 
 string  NetUtil::get(string requestUrl, string requestBody){
-    httplib::Client cli(requestUrl);
-    if (auto res = cli.Post("/" ,requestBody,"application/json")) {
+
+    int position = requestUrl.find_last_of("/");
+    string scheme_host_port = requestUrl.substr(0,position);
+    string path = requestUrl.substr(position);
+
+    httplib::Client cli(scheme_host_port);
+    if (auto res = cli.Post(&path[0] ,requestBody,"application/json")) {
         if (res->status == 200) {
             return res->body ;
         }
-    } else {
-        auto err = res.error();
-        return to_string(err);
     }
+    return "";
 }
 
 

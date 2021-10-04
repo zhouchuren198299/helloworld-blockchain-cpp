@@ -13,9 +13,6 @@ namespace server{
 
     void NodeServer::start() {
         httplib::Server server;
-        server.Get("/hi", [](const httplib::Request &req, httplib::Response &res) {
-            res.set_content("Hello World!", "application/json");
-        });
 
         server.Post(API::PING, [this](const httplib::Request &req, httplib::Response &res) {
             PingRequest pingRequest = JsonUtil::toObject(req.body, PingRequest{});

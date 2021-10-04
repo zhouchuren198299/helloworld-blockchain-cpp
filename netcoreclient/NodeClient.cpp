@@ -17,68 +17,108 @@ namespace netcoreclient{
         this->ip = ip;
     }
 
-    
-    PostTransactionResponse NodeClient::postTransaction(PostTransactionRequest request) {
-        string requestUrl = getUrl(API::POST_TRANSACTION);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml,PostTransactionResponse{});
+
+    unique_ptr<PostTransactionResponse> NodeClient::postTransaction(PostTransactionRequest request) {
+        try {
+            string requestUrl = getUrl(API::POST_TRANSACTION);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            PostTransactionResponse postTransactionResponse = JsonUtil::toObject(responseHtml,PostTransactionResponse{});
+            return unique_ptr<PostTransactionResponse>(new PostTransactionResponse(postTransactionResponse));
+        }catch (exception e){
+            return unique_ptr<PostTransactionResponse>(nullptr);
+        }
     }
 
-    
-    PingResponse NodeClient::pingNode(PingRequest request) {
-        string requestUrl = getUrl(API::PING);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml,PingResponse{});
+
+    unique_ptr<PingResponse> NodeClient::pingNode(PingRequest request) {
+        try {
+            string requestUrl = getUrl(API::PING);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            PingResponse pingResponse = JsonUtil::toObject(responseHtml,PingResponse{});
+            return unique_ptr<PingResponse>(new PingResponse(pingResponse));
+        }catch (exception e){
+            return unique_ptr<PingResponse>(nullptr);
+        }
     }
 
-    
-    GetBlockResponse NodeClient::getBlock(GetBlockRequest request) {
-        string requestUrl = getUrl(API::GET_BLOCK);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml,GetBlockResponse{});
+
+    unique_ptr<GetBlockResponse> NodeClient::getBlock(GetBlockRequest request) {
+        try {
+            string requestUrl = getUrl(API::GET_BLOCK);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            GetBlockResponse getBlockResponse = JsonUtil::toObject(responseHtml,GetBlockResponse{});
+            return unique_ptr<GetBlockResponse>(new GetBlockResponse(getBlockResponse));
+        }catch (exception e){
+            return unique_ptr<GetBlockResponse>(nullptr);
+        }
     }
 
-    
-    GetNodesResponse NodeClient::getNodes(GetNodesRequest request) {
-        string requestUrl = getUrl(API::GET_NODES);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml, GetNodesResponse{});
+
+    unique_ptr<GetNodesResponse> NodeClient::getNodes(GetNodesRequest request) {
+        try {
+            string requestUrl = getUrl(API::GET_NODES);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            GetNodesResponse getNodesResponse = JsonUtil::toObject(responseHtml,GetNodesResponse{});
+            return unique_ptr<GetNodesResponse>(new GetNodesResponse(getNodesResponse));
+        }catch (exception e){
+            return unique_ptr<GetNodesResponse>(nullptr);
+        }
     }
 
-    
-    PostBlockResponse NodeClient::postBlock(PostBlockRequest request) {
-        string requestUrl = getUrl(API::POST_BLOCK);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml,PostBlockResponse{});
+
+    unique_ptr<PostBlockResponse> NodeClient::postBlock(PostBlockRequest request) {
+        try {
+            string requestUrl = getUrl(API::POST_BLOCK);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            PostBlockResponse postBlockResponse = JsonUtil::toObject(responseHtml,PostBlockResponse{});
+            return unique_ptr<PostBlockResponse>(new PostBlockResponse(postBlockResponse));
+        }catch (exception e){
+            return unique_ptr<PostBlockResponse>(nullptr);
+        }
     }
 
-    
-    PostBlockchainHeightResponse NodeClient::postBlockchainHeight(PostBlockchainHeightRequest request) {
-        string requestUrl = getUrl(API::POST_BLOCKCHAIN_HEIGHT);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml, PostBlockchainHeightResponse{});
+
+    unique_ptr<PostBlockchainHeightResponse> NodeClient::postBlockchainHeight(PostBlockchainHeightRequest request) {
+        try {
+            string requestUrl = getUrl(API::POST_BLOCKCHAIN_HEIGHT);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            PostBlockchainHeightResponse postBlockchainHeightResponse = JsonUtil::toObject(responseHtml,PostBlockchainHeightResponse{});
+            return unique_ptr<PostBlockchainHeightResponse>(new PostBlockchainHeightResponse(postBlockchainHeightResponse));
+        }catch (exception e){
+            return unique_ptr<PostBlockchainHeightResponse>(nullptr);
+        }
     }
 
-    
-    GetBlockchainHeightResponse NodeClient::getBlockchainHeight(GetBlockchainHeightRequest request) {
-        string requestUrl = getUrl(API::GET_BLOCKCHAIN_HEIGHT);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml, GetBlockchainHeightResponse{});
+
+    unique_ptr<GetBlockchainHeightResponse> NodeClient::getBlockchainHeight(GetBlockchainHeightRequest request) {
+        try {
+            string requestUrl = getUrl(API::GET_BLOCKCHAIN_HEIGHT);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            GetBlockchainHeightResponse getBlockchainHeightResponse = JsonUtil::toObject(responseHtml,GetBlockchainHeightResponse{});
+            return unique_ptr<GetBlockchainHeightResponse>(new GetBlockchainHeightResponse(getBlockchainHeightResponse));
+        }catch (exception e){
+            return unique_ptr<GetBlockchainHeightResponse>(nullptr);
+        }
     }
 
-    
-    GetUnconfirmedTransactionsResponse NodeClient::getUnconfirmedTransactions(GetUnconfirmedTransactionsRequest request) {
-        string requestUrl = getUrl(API::GET_UNCONFIRMED_TRANSACTIONS);
-        string requestBody = JsonUtil::toString(request);
-        string responseHtml = NetUtil::get(requestUrl,requestBody);
-        return JsonUtil::toObject(responseHtml, GetUnconfirmedTransactionsResponse{});
+
+    unique_ptr<GetUnconfirmedTransactionsResponse> NodeClient::getUnconfirmedTransactions(GetUnconfirmedTransactionsRequest request) {
+        try {
+            string requestUrl = getUrl(API::GET_UNCONFIRMED_TRANSACTIONS);
+            string requestBody = JsonUtil::toString(request);
+            string responseHtml = NetUtil::get(requestUrl,requestBody);
+            GetUnconfirmedTransactionsResponse getUnconfirmedTransactionsResponse = JsonUtil::toObject(responseHtml,GetUnconfirmedTransactionsResponse{});
+            return unique_ptr<GetUnconfirmedTransactionsResponse>(new GetUnconfirmedTransactionsResponse(getUnconfirmedTransactionsResponse));
+        }catch (exception e){
+            return unique_ptr<GetUnconfirmedTransactionsResponse>(nullptr);
+        }
     }
 
 
@@ -88,6 +128,5 @@ namespace netcoreclient{
     string NodeClient::getUrl(string api) {
         return "http://" + ip + ":" + StringUtil::valueOfUint64(NetworkSetting::PORT) + api;
     }
-
 
 }

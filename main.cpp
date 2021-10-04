@@ -14,10 +14,11 @@
 #include "core/BlockchainCoreFactory.h"
 #include "util/ThreadUtil.h"
 #include "util/SystemUtil.h"
-#include "core/tool/NullTool.h"
+#include "util/NullUtil.h"
 #include "netcore/netcoreconfiguration/NetCoreConfiguration.h"
 #include "netcore/netcoreservice/NodeService.h"
 #include "netcore/netcoreserver/NodeServer.h"
+#include "netcore/BlockchainNetCoreFactory.h"
 #include <assert.h>
 
 using json = nlohmann::json;
@@ -29,8 +30,23 @@ using namespace BlockchainCoreFactory;
 using namespace netcoreconfiguration;
 using namespace service;
 using namespace server;
+using namespace netcore;
+
+
 
 #if 1
+int main()
+{
+    BlockchainNetCore *blockchainNetCore = BlockchainNetCoreFactory::createBlockchainNetCore(ResourcePathTool::getTestDataRootPath());
+    blockchainNetCore->start();
+
+    ThreadUtil::millisecondSleep(10 * 60 * 60 * 1000);
+}
+#endif
+
+
+
+#if 0
 int main()
 {
     BlockchainCore *blockchainCore = BlockchainCoreFactory::createBlockchainCore(ResourcePathTool::getTestDataRootPath());
@@ -96,8 +112,8 @@ int main()
     assert(payeeAddress == block2.transactions[1].outputs[0].address);
     //测试挖出的区块第二笔交易的交易输出是否是我们指定的收款金额
     assert(payeeValue == block2.transactions[1].outputs[0].value);
-    assert(!NullTool::isNullTransactionOutput(blockchainCore->queryUnspentTransactionOutputByAddress(payeeAddress)));
-    assert(NullTool::isNullTransactionOutput(blockchainCore->queryUnspentTransactionOutputByAddress(block1.transactions[0].outputs[0].address)));
+    assert(!NullUtil::isNullTransactionOutput(blockchainCore->queryUnspentTransactionOutputByAddress(payeeAddress)));
+    assert(NullUtil::isNullTransactionOutput(blockchainCore->queryUnspentTransactionOutputByAddress(block1.transactions[0].outputs[0].address)));
 
     exit(0);
 }

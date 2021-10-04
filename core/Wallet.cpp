@@ -8,7 +8,7 @@
 #include "../util/ByteUtil.h"
 #include "../util/FileUtil.h"
 #include "../util/EncodeDecodeTool.h"
-#include "tool/NullTool.h"
+#include "../util/NullUtil.h"
 #include "../util/StringUtil.h"
 
 
@@ -45,7 +45,7 @@ namespace core{
             for(vector<unsigned char> &bytesAccount:bytesAccounts){
                 Account account = EncodeDecodeTool::decode(bytesAccount,Account{});
                 TransactionOutput utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(account.address);
-                if(!NullTool::isNullTransactionOutput(utxo) && utxo.value > 0){
+                if(!NullUtil::isNullTransactionOutput(utxo) && utxo.value > 0){
                     accounts.push_back(account);
                 }
             }
@@ -78,7 +78,7 @@ namespace core{
 
     uint64_t Wallet::getBalanceByAddress(string address) {
         TransactionOutput utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(address);
-        if(NullTool::isNullTransactionOutput(utxo)){
+        if(NullUtil::isNullTransactionOutput(utxo)){
             return utxo.value;
         }
         return 0L;
@@ -134,7 +134,7 @@ namespace core{
                     Payee changePayee = createChangePayee(payers,nonChangePayees,changeAccount.address,fee);
                     //创建收款方(收款方=[非找零]收款方+[找零]收款方)
                     vector<Payee> payees(nonChangePayees);
-                    if(!NullTool::isNullPayee(changePayee)){
+                    if(!NullUtil::isNullPayee(changePayee)){
                         payees.push_back(changePayee);
                     }
                     //构造交易
@@ -191,7 +191,7 @@ namespace core{
             changePayee.value=changeValue0;
             return changePayee;
         }
-        return NullTool::newNullPayee();
+        return NullUtil::newNullPayee();
     }
     uint64_t Wallet::changeValue(vector<Payer> payers, vector<Payee> payees, uint64_t fee) {
         //交易输入总金额

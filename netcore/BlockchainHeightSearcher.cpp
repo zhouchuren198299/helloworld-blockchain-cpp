@@ -6,6 +6,7 @@
 #include "../netcoreclient/NodeClient.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
+#include "../util/NullUtil.h"
 
 using namespace netcoreclient;
 
@@ -38,11 +39,11 @@ namespace netcore{
         for(Node node:nodes){
             NodeClient nodeClient(node.ip);
             GetBlockchainHeightRequest getBlockchainHeightRequest;
-            GetBlockchainHeightResponse getBlockchainHeightResponse = nodeClient.getBlockchainHeight(getBlockchainHeightRequest);
-/*TODO            if(getBlockchainHeightResponse != null){
-                node.blockchainHeight=getBlockchainHeightResponse.blockchainHeight;
+            unique_ptr<GetBlockchainHeightResponse> getBlockchainHeightResponse = nodeClient.getBlockchainHeight(getBlockchainHeightRequest);
+            if(getBlockchainHeightResponse.get()){
+                node.blockchainHeight=getBlockchainHeightResponse->blockchainHeight;
                 nodeService->updateNode(node);
-            }*/
+            }
         }
     }
 

@@ -3,13 +3,12 @@
 //
 
 #include "UnconfirmedTransactionDatabase.h"
-#include "CoreConfiguration.h"
+#include "tool/TransactionDtoTool.h"
 #include "../util/FileUtil.h"
 #include "../util/ByteUtil.h"
-#include "tool/TransactionDtoTool.h"
 #include "../util/EncodeDecodeTool.h"
 #include "../util/KvDbUtil.h"
-#include "tool/NullTool.h"
+#include "../util/NullUtil.h"
 
 namespace core{
 
@@ -37,7 +36,7 @@ namespace core{
     TransactionDto UnconfirmedTransactionDatabase::selectTransactionByTransactionHash(string transactionHash){
         vector<unsigned char> byteTransactionDto = KvDbUtil::get(getUnconfirmedTransactionDatabasePath(), getKey(transactionHash));
         if(byteTransactionDto.empty()){
-            return NullTool::newNullTransactionDto();
+            return NullUtil::newNullTransactionDto();
         }
         return EncodeDecodeTool::decode(byteTransactionDto,TransactionDto{});
     }

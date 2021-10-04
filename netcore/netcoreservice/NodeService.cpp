@@ -3,7 +3,7 @@
 //
 
 #include "NodeService.h"
-#include "../netcoretool/NetcoreNullTool.h"
+#include "../../util/NullUtil.h"
 
 
 namespace service{
@@ -22,7 +22,7 @@ namespace service{
     }
 
     void NodeService::addNode(Node node){
-        if(!NetcoreNullTool::isNullNodePo(nodeDao->queryNode(node.ip))){
+        if(!NullUtil::isNullNodePo(nodeDao->queryNode(node.ip))){
             return;
         }
         NodePo nodePo = node2NodePo(node);
@@ -32,7 +32,7 @@ namespace service{
     
     void NodeService::updateNode(Node node){
         NodePo nodePo = nodeDao->queryNode(node.ip);
-        if(NetcoreNullTool::isNullNodePo(nodePo)){
+        if(NullUtil::isNullNodePo(nodePo)){
             return;
         }
         nodePo = node2NodePo(node);
@@ -42,8 +42,8 @@ namespace service{
     
     Node NodeService::queryNode(string ip){
         NodePo nodePo = nodeDao->queryNode(ip);
-        if(NetcoreNullTool::isNullNodePo(nodePo)){
-           return NetcoreNullTool::newNullNode();
+        if(NullUtil::isNullNodePo(nodePo)){
+           return NullUtil::newNullNode();
         }
         return nodePo2Node(nodePo);
     }

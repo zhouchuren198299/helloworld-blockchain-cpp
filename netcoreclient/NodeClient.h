@@ -22,42 +22,42 @@ namespace netcoreclient{
         /**
          * 提交交易至节点
          */
-        PostTransactionResponse postTransaction(PostTransactionRequest request);
+        unique_ptr<PostTransactionResponse> postTransaction(PostTransactionRequest request);
 
         /**
          * Ping节点
          */
-        PingResponse pingNode(PingRequest request);
+        unique_ptr<PingResponse> pingNode(PingRequest request);
 
         /**
          * 根据区块高度，获取区块
          */
-        GetBlockResponse getBlock(GetBlockRequest request);
+        unique_ptr<GetBlockResponse> getBlock(GetBlockRequest request);
 
         /**
          * 获取节点列表
          */
-        GetNodesResponse getNodes(GetNodesRequest request);
+        unique_ptr<GetNodesResponse> getNodes(GetNodesRequest request);
 
         /**
          * 提交区块至节点
          */
-        PostBlockResponse postBlock(PostBlockRequest request);
+        unique_ptr<PostBlockResponse> postBlock(PostBlockRequest request);
 
         /**
          * 提交区块链高度至节点
          */
-        PostBlockchainHeightResponse postBlockchainHeight(PostBlockchainHeightRequest request);
+        unique_ptr<PostBlockchainHeightResponse> postBlockchainHeight(PostBlockchainHeightRequest request);
 
         /**
          * 获取区块链高度
          */
-        GetBlockchainHeightResponse getBlockchainHeight(GetBlockchainHeightRequest request);
+        unique_ptr<GetBlockchainHeightResponse> getBlockchainHeight(GetBlockchainHeightRequest request);
 
         /**
          * 根据交易高度，获取交易
          */
-        GetUnconfirmedTransactionsResponse getUnconfirmedTransactions(GetUnconfirmedTransactionsRequest getUnconfirmedTransactionsRequest);
+        unique_ptr<GetUnconfirmedTransactionsResponse> getUnconfirmedTransactions(GetUnconfirmedTransactionsRequest getUnconfirmedTransactionsRequest);
     };
 }
 

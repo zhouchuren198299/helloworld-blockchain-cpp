@@ -7,7 +7,7 @@
 #include "../../util/ByteUtil.h"
 #include "../../util/KvDbUtil.h"
 #include "../../util/EncodeDecodeTool.h"
-#include "../netcoretool/NetcoreNullTool.h"
+#include "../../util/NullUtil.h"
 
 namespace netcoredao{
 
@@ -24,7 +24,7 @@ namespace netcoredao{
         if(!bytesNodePo.empty()){
             return EncodeDecodeTool::decode(bytesNodePo,NodePo{});
         }
-        return NetcoreNullTool::newNullNodePo();
+        return NullUtil::newNullNodePo();
     }
 
 

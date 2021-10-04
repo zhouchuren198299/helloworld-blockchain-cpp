@@ -3,15 +3,15 @@
 //
 
 #include "BlockTool.h"
-#include "../../dto/dto.h"
-#include "../../util/StringsUtil.h"
 #include "BlockDtoTool.h"
+#include "../../util/StringsUtil.h"
 #include "../../util/StringUtil.h"
 #include "../../util/TimeUtil.h"
+#include "../../util/NullUtil.h"
+
 #include "../../setting/GenesisBlockSetting.h"
 #include "Model2DtoTool.h"
 #include "TransactionTool.h"
-#include "NullTool.h"
 
 using namespace dto;
 
@@ -93,7 +93,7 @@ namespace BlockTool {
      * 校验区块的前区块哈希
      */
     bool checkPreviousBlockHash(Block *previousBlock, Block *currentBlock) {
-        if(NullTool::isNullBlock(*previousBlock)){
+        if(NullUtil::isNullBlock(*previousBlock)){
             return StringUtil::equals(GenesisBlockSetting::HASH, currentBlock->previousHash);
         } else {
             return StringUtil::equals(previousBlock->hash, currentBlock->previousHash);
@@ -104,7 +104,7 @@ namespace BlockTool {
      * 校验区块高度的连贯性
      */
     bool checkBlockHeight(Block *previousBlock, Block *currentBlock) {
-        if(NullTool::isNullBlock(*previousBlock)){
+        if(NullUtil::isNullBlock(*previousBlock)){
             return (GenesisBlockSetting::HEIGHT +1) == currentBlock->height;
         } else {
             return (previousBlock->height+1) == currentBlock->height;
@@ -120,7 +120,7 @@ namespace BlockTool {
         if(currentBlock->timestamp > TimeUtil::millisecondTimestamp()){
             return false;
         }
-        if(NullTool::isNullBlock(*previousBlock)){
+        if(NullUtil::isNullBlock(*previousBlock)){
             return true;
         } else {
             return currentBlock->timestamp > previousBlock->timestamp;
@@ -198,7 +198,7 @@ namespace BlockTool {
      * 获取下一个区块的高度
      */
     uint64_t getNextBlockHeight(Block *currentBlock) {
-        uint64_t nextBlockHeight = NullTool::isNullBlock(*currentBlock)? GenesisBlockSetting::HEIGHT+1:currentBlock->height+1;
+        uint64_t nextBlockHeight = NullUtil::isNullBlock(*currentBlock) ? GenesisBlockSetting::HEIGHT + 1 : currentBlock->height + 1;
         return nextBlockHeight;
     }
     

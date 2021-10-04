@@ -3,11 +3,11 @@
 //
 
 #include "BlockBroadcaster.h"
-#include "../core/tool/NullTool.h"
 #include "../core/tool/Model2DtoTool.h"
 #include "../netcoreclient/NodeClient.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
+#include "../util/NullUtil.h"
 
 using namespace netcoreclient;
 
@@ -36,7 +36,7 @@ namespace netcore{
 
         for(Node node:nodes){
             Block block = blockchainCore->queryTailBlock();
-            if(NullTool::isNullBlock(block)){
+            if(NullUtil::isNullBlock(block)){
                 return;
             }
             if(block.height <= node.blockchainHeight){

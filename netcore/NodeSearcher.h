@@ -25,7 +25,7 @@ namespace netcore{
         void start();
     private:
         void searchNodes();
-        void handleGetNodesResponse(GetNodesResponse getNodesResponse);
+        void handleGetNodesResponse(unique_ptr<GetNodesResponse>& getNodesResponse);
     };
 
 }
