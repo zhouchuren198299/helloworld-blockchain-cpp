@@ -6,7 +6,6 @@
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
 #include "../util/NullUtil.h"
-#include "../core/tool/TransactionTool.h"
 #include "../core/tool/BlockTool.h"
 #include "../core/tool/Model2DtoTool.h"
 #include "../core/tool/BlockDtoTool.h"

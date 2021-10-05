@@ -34,7 +34,7 @@ using namespace netcore;
 
 
 
-#if 1
+#if 0
 int main()
 {
     BlockchainNetCore *blockchainNetCore = BlockchainNetCoreFactory::createBlockchainNetCore(ResourcePathTool::getTestDataRootPath());
