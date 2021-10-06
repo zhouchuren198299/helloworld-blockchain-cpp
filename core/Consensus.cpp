@@ -51,27 +51,27 @@ namespace core{
         }
 
         // 目标区块的上一个区块
-        Block targetBlockPreviousBlock = blockchainDatabase->queryBlockByBlockHeight(targetBlockHeight-1);
+        unique_ptr<Block> targetBlockPreviousBlock = blockchainDatabase->queryBlockByBlockHeight(targetBlockHeight-1);
         /*
          * 目标区块的上一个区块如果不是一个周期的末尾，说明一个周期尚未结束
          * ，说明目标区块和[目标区块的上一个区块]位于同一个周期，此时目标区块难度和[目标区块的上一个区块]的难度相同。
          */
-        if (targetBlockPreviousBlock.height % IncentiveSetting::INTERVAL_BLOCK_COUNT != 0){
-            targetDifficult = targetBlockPreviousBlock.difficulty;
+        if (targetBlockPreviousBlock->height % IncentiveSetting::INTERVAL_BLOCK_COUNT != 0){
+            targetDifficult = targetBlockPreviousBlock->difficulty;
             return targetDifficult;
         }
 
         // *** 计算新周期难度值 ***
         // 上个周期的最后一个区块，此时，targetBlockPreviousBlock是上一个周期的最后一个区块，这里仅仅是重新命名了一个更为准确的变量名称。
-        Block previousIntervalLastBlock = targetBlockPreviousBlock;
+        unique_ptr<Block> &previousIntervalLastBlock = targetBlockPreviousBlock;
         // 上上个周期最后一个区块
-        Block previousPreviousIntervalLastBlock = blockchainDatabase->queryBlockByBlockHeight(previousIntervalLastBlock.height- IncentiveSetting::INTERVAL_BLOCK_COUNT);
+        unique_ptr<Block> previousPreviousIntervalLastBlock = blockchainDatabase->queryBlockByBlockHeight(previousIntervalLastBlock->height- IncentiveSetting::INTERVAL_BLOCK_COUNT);
         // 上个周期出块实际耗时
-        long previousIntervalActualTimespan = previousIntervalLastBlock.timestamp - previousPreviousIntervalLastBlock.timestamp;
+        long previousIntervalActualTimespan = previousIntervalLastBlock->timestamp - previousPreviousIntervalLastBlock->timestamp;
 
 
         string hexPreviousIntervalActualTimespan = ByteUtil::bytesToHexString(ByteUtil::uint64ToBytes(previousIntervalActualTimespan));
         string hexIntervalTime = ByteUtil::bytesToHexString(ByteUtil::uint64ToBytes(IncentiveSetting::INTERVAL_TIME));
-        return ByteUtil::divide(ByteUtil::multiply(previousIntervalLastBlock.difficulty,hexPreviousIntervalActualTimespan),hexIntervalTime);
+        return ByteUtil::divide(ByteUtil::multiply(previousIntervalLastBlock->difficulty,hexPreviousIntervalActualTimespan),hexIntervalTime);
     }
 }

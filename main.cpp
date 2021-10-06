@@ -14,7 +14,6 @@
 #include "core/BlockchainCoreFactory.h"
 #include "util/ThreadUtil.h"
 #include "util/SystemUtil.h"
-#include "util/NullUtil.h"
 #include "netcore/netcoreconfiguration/NetCoreConfiguration.h"
 #include "netcore/netcoreservice/NodeService.h"
 #include "netcore/netcoreserver/NodeServer.h"
@@ -73,8 +72,8 @@ int main()
     ThreadUtil::millisecondSleep(10000);
 
     //测试是否挖出一个区块
-    Block block1 = blockchainCore->getBlockchainDatabase()->queryTailBlock();
-    assert(1 == block1.height);
+    unique_ptr<Block> block1 = blockchainCore->getBlockchainDatabase()->queryTailBlock();
+    assert(1 == block1->height);
 
 
 
@@ -105,15 +104,15 @@ int main()
     ThreadUtil::millisecondSleep(10000);
 
 
-    Block block2 = blockchainCore->getBlockchainDatabase()->queryTailBlock();
+    unique_ptr<Block> block2 = blockchainCore->getBlockchainDatabase()->queryTailBlock();
     //测试是否挖出一个区块
-    assert(2 == block2.height);
+    assert(2 == block2->height);
     //测试挖出的区块第二笔交易的交易输出是否是我们指定的收款地址
-    assert(payeeAddress == block2.transactions[1].outputs[0].address);
+    assert(payeeAddress == block2->transactions[1].outputs[0].address);
     //测试挖出的区块第二笔交易的交易输出是否是我们指定的收款金额
-    assert(payeeValue == block2.transactions[1].outputs[0].value);
-    assert(!NullUtil::isNullTransactionOutput(blockchainCore->queryUnspentTransactionOutputByAddress(payeeAddress)));
-    assert(NullUtil::isNullTransactionOutput(blockchainCore->queryUnspentTransactionOutputByAddress(block1.transactions[0].outputs[0].address)));
+    assert(payeeValue == block2->transactions[1].outputs[0].value);
+    assert(blockchainCore->queryUnspentTransactionOutputByAddress(payeeAddress).get());
+    assert(!blockchainCore->queryUnspentTransactionOutputByAddress(block1->transactions[0].outputs[0].address).get());
 
     exit(0);
 }

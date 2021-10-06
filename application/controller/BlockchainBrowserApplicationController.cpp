@@ -25,13 +25,13 @@ namespace controller{
         try {
             QueryTransactionByTransactionHashRequest request = JsonUtil::toObject(req.body, QueryTransactionByTransactionHashRequest{});
 
-            TransactionVo transactionVo = blockchainBrowserApplicationService->queryTransactionByTransactionHash(request.transactionHash);
-/*            if(transactionVo == null){
-                return Response.fail(ResponseMessage.NOT_FOUND_TRANSACTION);
-            }*/
+            unique_ptr<TransactionVo> transactionVo = blockchainBrowserApplicationService->queryTransactionByTransactionHash(request.transactionHash);
+            if(!transactionVo.get()){
+                return fail(res,NOT_FOUND_TRANSACTION);
+            }
 
             QueryTransactionByTransactionHashResponse response;
-            response.transaction=transactionVo;
+            response.transaction=*transactionVo;
             success(res,response);
         } catch (exception e){
             string message = "根据交易哈希查询交易失败";
@@ -45,8 +45,7 @@ namespace controller{
 
             PageCondition pageCondition = request.pageCondition;
             if(StringUtil::isEmpty(request.blockHash)){
-                requestParamIllegal(res);
-                return;
+                return requestParamIllegal(res);
             }
             vector<TransactionVo> transactionVos = blockchainBrowserApplicationService->queryTransactionListByBlockHashTransactionHeight(request.blockHash,pageCondition.from,pageCondition.size);
             QueryTransactionsByBlockHashTransactionHeightResponse response;
@@ -62,9 +61,9 @@ namespace controller{
         try {
             QueryTransactionOutputByAddressRequest request = JsonUtil::toObject(req.body, QueryTransactionOutputByAddressRequest{});
 
-            TransactionOutputVo3 transactionOutputVo3 = blockchainBrowserApplicationService->queryTransactionOutputByAddress(request.address);
+            unique_ptr<TransactionOutputVo3> transactionOutputVo3 = blockchainBrowserApplicationService->queryTransactionOutputByAddress(request.address);
             QueryTransactionOutputByAddressResponse response;
-            response.transactionOutput=transactionOutputVo3;
+            response.transactionOutput=*transactionOutputVo3;
             success(res,response);
         } catch (exception e){
             string message = "[查询交易输出]失败";
@@ -76,9 +75,9 @@ namespace controller{
         try {
             QueryTransactionOutputByTransactionOutputIdRequest request = JsonUtil::toObject(req.body, QueryTransactionOutputByTransactionOutputIdRequest{});
 
-            TransactionOutputVo3 transactionOutputVo3 = blockchainBrowserApplicationService->queryTransactionOutputByTransactionOutputId(request.transactionHash,request.transactionOutputIndex);
+            unique_ptr<TransactionOutputVo3> transactionOutputVo3 = blockchainBrowserApplicationService->queryTransactionOutputByTransactionOutputId(request.transactionHash,request.transactionOutputIndex);
             QueryTransactionOutputByTransactionOutputIdResponse response;
-            response.transactionOutput=transactionOutputVo3;
+            response.transactionOutput=*transactionOutputVo3;
             success(res,response);
         } catch (exception e){
             string message = "[查询交易输出]失败";
@@ -88,7 +87,7 @@ namespace controller{
     }
     void BlockchainBrowserApplicationController::queryBlockchainHeight(const httplib::Request &req, httplib::Response &res){
         try {
-            long blockchainHeight = blockchainNetCore->getBlockchainCore()->queryBlockchainHeight();
+            uint64_t blockchainHeight = blockchainNetCore->getBlockchainCore()->queryBlockchainHeight();
             QueryBlockchainHeightResponse response;
             response.blockchainHeight=blockchainHeight;
             success(res,response);
@@ -102,12 +101,12 @@ namespace controller{
         try {
             QueryUnconfirmedTransactionByTransactionHashRequest request = JsonUtil::toObject(req.body, QueryUnconfirmedTransactionByTransactionHashRequest{});
 
-            UnconfirmedTransactionVo unconfirmedTransactionVo = blockchainBrowserApplicationService->queryUnconfirmedTransactionByTransactionHash(request.transactionHash);
-/*            if(unconfirmedTransactionVo == null){
-                return Response.fail(ResponseMessage.NOT_FOUND_UNCONFIRMED_TRANSACTIONS);
-            }*/
+            unique_ptr<UnconfirmedTransactionVo> unconfirmedTransactionVo = blockchainBrowserApplicationService->queryUnconfirmedTransactionByTransactionHash(request.transactionHash);
+            if(!unconfirmedTransactionVo.get()){
+                return fail(res,NOT_FOUND_UNCONFIRMED_TRANSACTIONS);
+            }
             QueryUnconfirmedTransactionByTransactionHashResponse response;
-            response.transaction=unconfirmedTransactionVo;
+            response.transaction=*unconfirmedTransactionVo;
             success(res,response);
         } catch (exception e){
             string message = "根据交易哈希查询未确认交易失败";
@@ -121,16 +120,16 @@ namespace controller{
 
             PageCondition pageCondition = request.pageCondition;
             vector<TransactionDto> transactionDtos = blockchainNetCore->getBlockchainCore()->queryUnconfirmedTransactions(pageCondition.from,pageCondition.size);
-/*            if(transactionDtos == null){
-                return Response.fail(ResponseMessage.NOT_FOUND_UNCONFIRMED_TRANSACTIONS);
-            }*/
+            if(transactionDtos.empty()){
+                return fail(res,NOT_FOUND_UNCONFIRMED_TRANSACTIONS);
+            }
 
             vector<UnconfirmedTransactionVo> unconfirmedTransactionVos;
-            for(TransactionDto transactionDto : transactionDtos){
-                UnconfirmedTransactionVo unconfirmedTransactionVo = blockchainBrowserApplicationService->queryUnconfirmedTransactionByTransactionHash(TransactionDtoTool::calculateTransactionHash(transactionDto));
- /*               if(unconfirmedTransactionVo != null){
-                    unconfirmedTransactionVos.push_back(unconfirmedTransactionVo);
-                }*/
+            for(TransactionDto &transactionDto : transactionDtos){
+                unique_ptr<UnconfirmedTransactionVo> unconfirmedTransactionVo = blockchainBrowserApplicationService->queryUnconfirmedTransactionByTransactionHash(TransactionDtoTool::calculateTransactionHash(transactionDto));
+                if(unconfirmedTransactionVo.get()){
+                    unconfirmedTransactionVos.push_back(*unconfirmedTransactionVo);
+                }
             }
             QueryUnconfirmedTransactionsResponse response;
             response.unconfirmedTransactions=unconfirmedTransactionVos;
@@ -145,12 +144,12 @@ namespace controller{
         try {
             QueryBlockByBlockHeightRequest request = JsonUtil::toObject(req.body, QueryBlockByBlockHeightRequest{});
 
-            BlockVo blockVo = blockchainBrowserApplicationService->queryBlockViewByBlockHeight(request.blockHeight);
-/*            if(blockVo == null){
-                return Response.fail(ResponseMessage.NOT_FOUND_BLOCK);
-            }*/
+            unique_ptr<BlockVo> blockVo = blockchainBrowserApplicationService->queryBlockViewByBlockHeight(request.blockHeight);
+            if(!blockVo.get()){
+                return fail(res,NOT_FOUND_BLOCK);
+            }
             QueryBlockByBlockHeightResponse response;
-            response.block=blockVo;
+            response.block=*blockVo;
             success(res,response);
         } catch (exception e){
             string message = "查询获取失败";
@@ -162,13 +161,13 @@ namespace controller{
         try {
             QueryBlockByBlockHashRequest request = JsonUtil::toObject(req.body, QueryBlockByBlockHashRequest{});
 
-            Block block = blockchainNetCore->getBlockchainCore()->queryBlockByBlockHash(request.blockHash);
-/*            if(block == null){
-                return Response.fail(ResponseMessage.NOT_FOUND_BLOCK);
-            }*/
-            BlockVo blockVo = blockchainBrowserApplicationService->queryBlockViewByBlockHeight(block.height);
+            unique_ptr<Block> block = blockchainNetCore->getBlockchainCore()->queryBlockByBlockHash(request.blockHash);
+            if(!block.get()){
+                return fail(res,NOT_FOUND_BLOCK);
+            }
+            unique_ptr<BlockVo> blockVo = blockchainBrowserApplicationService->queryBlockViewByBlockHeight(block->height);
             QueryBlockByBlockHashResponse response;
-            response.block=blockVo;
+            response.block=*blockVo;
             success(res,response);
         } catch (exception e){
             string message = "[根据区块哈希查询区块]失败";
@@ -179,13 +178,13 @@ namespace controller{
     void BlockchainBrowserApplicationController::queryTop10Blocks(const httplib::Request &req, httplib::Response &res){
         try {
             vector<Block> blocks;
-            long blockHeight = blockchainNetCore->getBlockchainCore()->queryBlockchainHeight();
+            uint64_t blockHeight = blockchainNetCore->getBlockchainCore()->queryBlockchainHeight();
             while (true){
                 if(blockHeight <= GenesisBlockSetting::HEIGHT){
                     break;
                 }
-                Block block = blockchainNetCore->getBlockchainCore()->queryBlockByBlockHeight(blockHeight);
-                blocks.push_back(block);
+                unique_ptr<Block> block = blockchainNetCore->getBlockchainCore()->queryBlockByBlockHeight(blockHeight);
+                blocks.push_back(*block.get());
                 if(blocks.size() >= 10){
                     break;
                 }
@@ -196,7 +195,7 @@ namespace controller{
             for(Block &block : blocks){
                 BlockVo2 blockVo;
                 blockVo.height=block.height;
-                blockVo.blockSize=SizeTool::calculateBlockSize(&block)+"字符";
+                blockVo.blockSize=StringUtil::valueOfUint64(SizeTool::calculateBlockSize(&block))+"字符";
                 blockVo.transactionCount=BlockTool::getTransactionCount(&block);
                 blockVo.minerIncentiveValue=BlockTool::getWritedIncentiveValue(&block);
                 blockVo.time=TimeUtil::formatMillisecondTimestamp(block.timestamp);

@@ -37,7 +37,7 @@ namespace ScriptTool{
                 stringScript = StringUtil::concatenate3(stringScript,OperationCodeEnum::OP_PUSHDATA.name,StringUtil::BLANKSPACE);
                 stringScript = StringUtil::concatenate3(stringScript,operationData,StringUtil::BLANKSPACE);
             }else {
-                throw new exception("不能识别的指令");
+                throw exception("不能识别的指令");
             }
         }
         return stringScript;

@@ -7,7 +7,6 @@
 #include "../../util/ByteUtil.h"
 #include "../../util/KvDbUtil.h"
 #include "../../util/EncodeDecodeTool.h"
-#include "../../util/NullUtil.h"
 
 namespace netcoredao{
 
@@ -19,12 +18,13 @@ namespace netcoredao{
         this->netCoreConfiguration = netCoreConfiguration;
     }
 
-    NodePo NodeDao::queryNode(string ip){
+    unique_ptr<NodePo> NodeDao::queryNode(string ip){
         vector<unsigned char> bytesNodePo = KvDbUtil::get(getNodeDatabasePath(),getKeyByIp(ip));
-        if(!bytesNodePo.empty()){
-            return EncodeDecodeTool::decode(bytesNodePo,NodePo{});
+        if(bytesNodePo.empty()){
+            return unique_ptr<NodePo>(nullptr);
         }
-        return NullUtil::newNullNodePo();
+        NodePo nodePo = EncodeDecodeTool::decode(bytesNodePo,NodePo{});
+        return unique_ptr<NodePo>(new NodePo(nodePo));
     }
 
 

@@ -7,7 +7,6 @@
 #include "../../util/StringsUtil.h"
 #include "../../util/StringUtil.h"
 #include "../../util/TimeUtil.h"
-#include "../../util/NullUtil.h"
 
 #include "../../setting/GenesisBlockSetting.h"
 #include "Model2DtoTool.h"
@@ -92,8 +91,8 @@ namespace BlockTool {
     /**
      * 校验区块的前区块哈希
      */
-    bool checkPreviousBlockHash(Block *previousBlock, Block *currentBlock) {
-        if(NullUtil::isNullBlock(*previousBlock)){
+    bool checkPreviousBlockHash(unique_ptr<Block> &previousBlock, Block *currentBlock) {
+        if(!previousBlock.get()){
             return StringUtil::equals(GenesisBlockSetting::HASH, currentBlock->previousHash);
         } else {
             return StringUtil::equals(previousBlock->hash, currentBlock->previousHash);
@@ -103,8 +102,8 @@ namespace BlockTool {
     /**
      * 校验区块高度的连贯性
      */
-    bool checkBlockHeight(Block *previousBlock, Block *currentBlock) {
-        if(NullUtil::isNullBlock(*previousBlock)){
+    bool checkBlockHeight(unique_ptr<Block> &previousBlock, Block *currentBlock) {
+        if(!previousBlock.get()){
             return (GenesisBlockSetting::HEIGHT +1) == currentBlock->height;
         } else {
             return (previousBlock->height+1) == currentBlock->height;
@@ -116,11 +115,11 @@ namespace BlockTool {
      * 区块时间戳一定要比当前时间戳小。挖矿是个技术活，默认矿工有能力将自己机器的时间调整正确，所以矿工不应该穿越到未来挖矿。
      * 区块时间戳一定要比前一个区块的时间戳大。
      */
-    bool checkBlockTimestamp(Block *previousBlock, Block *currentBlock) {
+    bool checkBlockTimestamp(unique_ptr<Block> &previousBlock, Block *currentBlock) {
         if(currentBlock->timestamp > TimeUtil::millisecondTimestamp()){
             return false;
         }
-        if(NullUtil::isNullBlock(*previousBlock)){
+        if(!previousBlock.get()){
             return true;
         } else {
             return currentBlock->timestamp > previousBlock->timestamp;
@@ -141,6 +140,9 @@ namespace BlockTool {
      * ，所以即使这里认为两个区块相等，实际上这两个区块还是有可能不相等的。
      */
     bool isBlockEquals(Block *block1, Block *block2) {
+        if(block1 == nullptr || block2 == nullptr){
+            return false;
+        }
         return StringUtil::equals(block1->hash, block2->hash);
     }
 
@@ -188,7 +190,7 @@ namespace BlockTool {
                     uint64_t fee = TransactionTool::getTransactionFee(&transaction);
                     blockFee += fee;
                 }else{
-                    throw new exception();
+                    throw exception();
                 }
             }
         }
@@ -197,8 +199,8 @@ namespace BlockTool {
     /**
      * 获取下一个区块的高度
      */
-    uint64_t getNextBlockHeight(Block *currentBlock) {
-        uint64_t nextBlockHeight = NullUtil::isNullBlock(*currentBlock) ? GenesisBlockSetting::HEIGHT + 1 : currentBlock->height + 1;
+    uint64_t getNextBlockHeight(unique_ptr<Block> &currentBlock) {
+        uint64_t nextBlockHeight = !currentBlock.get() ? GenesisBlockSetting::HEIGHT + 1 : currentBlock->height + 1;
         return nextBlockHeight;
     }
     

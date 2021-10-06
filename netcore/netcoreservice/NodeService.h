@@ -26,7 +26,7 @@ namespace service {
         /**
          * 查询node
          */
-        Node queryNode(string ip);
+        unique_ptr<Node> queryNode(string ip);
         /**
          * 获取所有节点
          */

@@ -8,7 +8,6 @@
 #include "../util/ByteUtil.h"
 #include "../util/EncodeDecodeTool.h"
 #include "../util/KvDbUtil.h"
-#include "../util/NullUtil.h"
 
 namespace core{
 
@@ -33,12 +32,13 @@ namespace core{
     void UnconfirmedTransactionDatabase::deleteByTransactionHash(string transactionHash) {
         KvDbUtil::delete0(getUnconfirmedTransactionDatabasePath(), getKey(transactionHash));
     }
-    TransactionDto UnconfirmedTransactionDatabase::selectTransactionByTransactionHash(string transactionHash){
+    unique_ptr<TransactionDto> UnconfirmedTransactionDatabase::selectTransactionByTransactionHash(string transactionHash){
         vector<unsigned char> byteTransactionDto = KvDbUtil::get(getUnconfirmedTransactionDatabasePath(), getKey(transactionHash));
         if(byteTransactionDto.empty()){
-            return NullUtil::newNullTransactionDto();
+            return unique_ptr<TransactionDto>(nullptr);
         }
-        return EncodeDecodeTool::decode(byteTransactionDto,TransactionDto{});
+        TransactionDto transactionDto = EncodeDecodeTool::decode(byteTransactionDto,TransactionDto{});
+        return unique_ptr<TransactionDto>(new TransactionDto(transactionDto));
     }
 
 

@@ -6,7 +6,6 @@
 #include "../netcoreclient/NodeClient.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
-#include "../util/NullUtil.h"
 
 using namespace netcoreclient;
 

@@ -30,7 +30,7 @@ namespace core{
         vector<unsigned char> getKeyByAddress(string address);
         vector<unsigned char> getKeyByAccount(Account account);
         bool haveEnoughMoneyToPay(vector<Payer> payers, vector<Payee> payees, uint64_t fee);
-        Payee createChangePayee(vector<Payer> payers, vector<Payee> payees, string changeAddress, uint64_t fee);
+        unique_ptr<Payee> createChangePayee(vector<Payer> payers, vector<Payee> payees, string changeAddress, uint64_t fee);
         uint64_t changeValue(vector<Payer> payers, vector<Payee> payees, uint64_t fee);
         TransactionDto buildTransaction(vector<Payer> payers, vector<Payee> payees);
     };

@@ -3,8 +3,6 @@
 //
 
 #include "NodeService.h"
-#include "../../util/NullUtil.h"
-
 
 namespace service{
 
@@ -22,7 +20,7 @@ namespace service{
     }
 
     void NodeService::addNode(Node node){
-        if(!NullUtil::isNullNodePo(nodeDao->queryNode(node.ip))){
+        if(nodeDao->queryNode(node.ip).get()){
             return;
         }
         NodePo nodePo = node2NodePo(node);
@@ -31,21 +29,22 @@ namespace service{
 
     
     void NodeService::updateNode(Node node){
-        NodePo nodePo = nodeDao->queryNode(node.ip);
-        if(NullUtil::isNullNodePo(nodePo)){
+        unique_ptr<NodePo> nodePo = nodeDao->queryNode(node.ip);
+        if(!nodePo.get()){
             return;
         }
-        nodePo = node2NodePo(node);
-        nodeDao->updateNode(nodePo);
+        NodePo nodePo2 = node2NodePo(node);
+        nodeDao->updateNode(nodePo2);
     }
 
     
-    Node NodeService::queryNode(string ip){
-        NodePo nodePo = nodeDao->queryNode(ip);
-        if(NullUtil::isNullNodePo(nodePo)){
-           return NullUtil::newNullNode();
+    unique_ptr<Node> NodeService::queryNode(string ip){
+        unique_ptr<NodePo> nodePo = nodeDao->queryNode(ip);
+        if(!nodePo.get()){
+            return unique_ptr<Node>(nullptr);
         }
-        return nodePo2Node(nodePo);
+        Node node = nodePo2Node(*nodePo.get());
+        return unique_ptr<Node>(new Node(node));
     }
 
     vector<Node> NodeService::nodePo2Nodes(vector<NodePo> nodePos){

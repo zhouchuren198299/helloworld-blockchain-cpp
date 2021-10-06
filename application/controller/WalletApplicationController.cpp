@@ -105,7 +105,7 @@ namespace controller{
                     }
                 }
 
-                long balance = 0;
+                uint64_t balance = 0;
                 for(AccountVo2 accountVo : accountVos){
                     balance += accountVo.value;
                 }

@@ -33,7 +33,7 @@ namespace ScriptDtoTool{
                 vector<unsigned char> bytesOperationData = ByteUtil::hexStringToBytes(operationData);
                 bytesScript = ByteUtil::concatenate3(bytesScript, ByteUtil::concatenateLength(bytesOperationCode), ByteUtil::concatenateLength(bytesOperationData));
             }else {
-                throw new exception("不能识别的指令");
+                throw exception("不能识别的指令");
             }
         }
         return bytesScript;
@@ -99,7 +99,7 @@ namespace ScriptDtoTool{
                 string stringOperationData = ByteUtil::bytesToHexString(bytesOperationData);
                 script.push_back(stringOperationData);
             }else {
-                throw new exception("不能识别的指令");
+                throw exception("不能识别的指令");
             }
         }
         return script;

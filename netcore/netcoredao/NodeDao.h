@@ -27,7 +27,7 @@ namespace netcoredao {
         /**
          * 查询节点
          */
-        NodePo queryNode(string ip);
+        unique_ptr<NodePo> queryNode(string ip);
         /**
          * 查询所有节点
          */

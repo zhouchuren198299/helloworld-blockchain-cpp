@@ -17,7 +17,6 @@
 #include "../util/LogUtil.h"
 #include "../util/FileUtil.h"
 #include "../util/EncodeDecodeTool.h"
-#include "../util/NullUtil.h"
 
 using namespace model;
 using namespace BlockchainActionEnum;
@@ -42,13 +41,13 @@ namespace core{
     bool BlockchainDatabase::addBlockDto(BlockDto *blockDto) {
         try {
             mutex.lock();
-            Block block = blockDto2Block(blockDto);
-            bool checkBlock0 = checkBlock(&block);
+            unique_ptr<Block> block = blockDto2Block(blockDto);
+            bool checkBlock0 = checkBlock(block.get());
             if(!checkBlock0){
                 mutex.unlock();
                 return false;
             }
-            KvWriteBatch kvWriteBatch = createBlockWriteBatch(&block, ADD_BLOCK);
+            KvWriteBatch kvWriteBatch = createBlockWriteBatch(block.get(), ADD_BLOCK);
             KvDbUtil::write(getBlockchainDatabasePath(), kvWriteBatch);
             mutex.unlock();
             return true;
@@ -61,12 +60,12 @@ namespace core{
     void BlockchainDatabase::deleteTailBlock() {
         try {
             mutex.lock();
-            Block tailBlock = queryTailBlock();
-            if(NullUtil::isNullBlock(tailBlock)){
+            unique_ptr<Block> tailBlock = queryTailBlock();
+            if(!tailBlock.get()){
                 mutex.unlock();
                 return;
             }
-            KvWriteBatch kvWriteBatch = createBlockWriteBatch(&tailBlock, DELETE_BLOCK);
+            KvWriteBatch kvWriteBatch = createBlockWriteBatch(tailBlock.get(), DELETE_BLOCK);
             KvDbUtil::write(getBlockchainDatabasePath(),kvWriteBatch);
             mutex.unlock();
         } catch(exception e){
@@ -78,14 +77,14 @@ namespace core{
         try {
             mutex.lock();
             while (true){
-                Block tailBlock = queryTailBlock();
-                if(NullUtil::isNullBlock(tailBlock)){
+                unique_ptr<Block> tailBlock = queryTailBlock();
+                if(!tailBlock.get()){
                     break;
                 }
-                if(tailBlock.height < blockHeight){
+                if(tailBlock->height < blockHeight){
                     break;
                 }
-                KvWriteBatch kvWriteBatch = createBlockWriteBatch(&tailBlock, DELETE_BLOCK);
+                KvWriteBatch kvWriteBatch = createBlockWriteBatch(tailBlock.get(), DELETE_BLOCK);
                 KvDbUtil::write(getBlockchainDatabasePath(),kvWriteBatch);
             }
             mutex.unlock();
@@ -114,19 +113,19 @@ namespace core{
 
 
         //校验业务
-        Block previousBlock = queryTailBlock();
+        unique_ptr<Block> previousBlock = queryTailBlock();
         //校验区块高度的连贯性
-        if(!BlockTool::checkBlockHeight(&previousBlock,block)){
+        if(!BlockTool::checkBlockHeight(previousBlock,block)){
             LogUtil::debug("区块写入的区块高度出错。");
             return false;
         }
         //校验区块的前区块哈希
-        if(!BlockTool::checkPreviousBlockHash(&previousBlock,block)){
+        if(!BlockTool::checkPreviousBlockHash(previousBlock,block)){
             LogUtil::debug("区块写入的前区块哈希出错。");
             return false;
         }
         //校验区块时间
-        if(!BlockTool::checkBlockTimestamp(&previousBlock,block)){
+        if(!BlockTool::checkBlockTimestamp(previousBlock,block)){
             LogUtil::debug("区块生成的时间太滞后。");
             return false;
         }
@@ -254,26 +253,27 @@ namespace core{
 
 //region 区块查询
 
-    Block BlockchainDatabase::queryTailBlock() {
+    unique_ptr<Block> BlockchainDatabase::queryTailBlock() {
         uint64_t blockchainHeight = queryBlockchainHeight();
         if(blockchainHeight <= GenesisBlockSetting::HEIGHT){
-            return NullUtil::newNullBlock();
+            return unique_ptr<Block>(nullptr);
         }
         return queryBlockByBlockHeight(blockchainHeight);
     }
 
-    Block BlockchainDatabase::queryBlockByBlockHeight(uint64_t blockHeight) {
+    unique_ptr<Block> BlockchainDatabase::queryBlockByBlockHeight(uint64_t blockHeight) {
         vector<unsigned char> bytesBlock = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildBlockHeightToBlockKey(blockHeight));
         if(bytesBlock.empty()){
-            return NullUtil::newNullBlock();
+            return unique_ptr<Block>(nullptr);
         }
-        return EncodeDecodeTool::decode(bytesBlock,Block{});
+        Block block = EncodeDecodeTool::decode(bytesBlock,Block{});
+        return unique_ptr<Block>(new Block(block));
     }
 
-    Block BlockchainDatabase::queryBlockByBlockHash(string blockHash) {
+    unique_ptr<Block> BlockchainDatabase::queryBlockByBlockHash(string blockHash) {
         vector<unsigned char> bytesBlockHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildBlockHashToBlockHeightKey(blockHash));
         if(bytesBlockHeight.empty()){
-            return NullUtil::newNullBlock();
+            return unique_ptr<Block>(nullptr);
         }
         return queryBlockByBlockHeight(ByteUtil::bytesToUint64(bytesBlockHeight));
     }
@@ -283,48 +283,50 @@ namespace core{
 
 //region 交易查询
 
-    Transaction BlockchainDatabase::queryTransactionByTransactionHash(string transactionHash) {
+    unique_ptr<Transaction> BlockchainDatabase::queryTransactionByTransactionHash(string transactionHash) {
         vector<unsigned char> transactionHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionHashToTransactionHeightKey(transactionHash));
         if(transactionHeight.empty()){
-            return NullUtil::newNullTransaction();
+            return unique_ptr<Transaction>(nullptr);
         }
         return queryTransactionByTransactionHeight(ByteUtil::bytesToUint64(transactionHeight));
     }
 
 
-    Transaction BlockchainDatabase::querySourceTransactionByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
+    unique_ptr<Transaction> BlockchainDatabase::querySourceTransactionByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
         vector<unsigned char> sourceTransactionHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionOutputIdToSourceTransactionHeightKey(transactionHash,transactionOutputIndex));
         if(sourceTransactionHeight.empty()){
-            return NullUtil::newNullTransaction();
+            return unique_ptr<Transaction>(nullptr);
         }
         return queryTransactionByTransactionHeight(ByteUtil::bytesToUint64(sourceTransactionHeight));
     }
 
 
-    Transaction BlockchainDatabase::queryDestinationTransactionByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
+    unique_ptr<Transaction> BlockchainDatabase::queryDestinationTransactionByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
         vector<unsigned char> destinationTransactionHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionOutputIdToDestinationTransactionHeightKey(transactionHash,transactionOutputIndex));
         if(destinationTransactionHeight.empty()){
-            return NullUtil::newNullTransaction();
+            return unique_ptr<Transaction>(nullptr);
         }
         return queryTransactionByTransactionHeight(ByteUtil::bytesToUint64(destinationTransactionHeight));
     }
 
 
-    TransactionOutput BlockchainDatabase::queryTransactionOutputByTransactionOutputHeight(uint64_t transactionOutputHeight) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::queryTransactionOutputByTransactionOutputHeight(uint64_t transactionOutputHeight) {
         vector<unsigned char> bytesTransactionOutput = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionOutputHeightToTransactionOutputKey(transactionOutputHeight));
         if(bytesTransactionOutput.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
-        return EncodeDecodeTool::decode(bytesTransactionOutput,TransactionOutput{});
+        TransactionOutput transactionOutput = EncodeDecodeTool::decode(bytesTransactionOutput,TransactionOutput{});
+        return unique_ptr<TransactionOutput>(new TransactionOutput(transactionOutput));
     }
 
 
-    Transaction BlockchainDatabase::queryTransactionByTransactionHeight(uint64_t transactionHeight) {
+    unique_ptr<Transaction> BlockchainDatabase::queryTransactionByTransactionHeight(uint64_t transactionHeight) {
         vector<unsigned char> byteTransaction = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionHeightToTransactionKey(transactionHeight));
         if(byteTransaction.empty()){
-            return NullUtil::newNullTransaction();
+            return unique_ptr<Transaction>(nullptr);
         }
-        return EncodeDecodeTool::decode(byteTransaction,Transaction{});
+        Transaction transaction = EncodeDecodeTool::decode(byteTransaction,Transaction{});
+        return unique_ptr<Transaction>(new Transaction(transaction));
     }
 //endregion
 
@@ -332,55 +334,55 @@ namespace core{
 
 //region 交易输出查询
 
-    TransactionOutput BlockchainDatabase::queryTransactionOutputByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::queryTransactionOutputByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
         vector<unsigned char> bytesTransactionOutputHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionOutputIdToTransactionOutputHeightKey(transactionHash,transactionOutputIndex));
         if(bytesTransactionOutputHeight.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil::bytesToUint64(bytesTransactionOutputHeight));
     }
 
 
-    TransactionOutput BlockchainDatabase::queryUnspentTransactionOutputByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::queryUnspentTransactionOutputByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
         vector<unsigned char> bytesTransactionOutputHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionOutputIdToUnspentTransactionOutputHeightKey(transactionHash,transactionOutputIndex));
         if(bytesTransactionOutputHeight.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil::bytesToUint64(bytesTransactionOutputHeight));
     }
 
 
-    TransactionOutput BlockchainDatabase::querySpentTransactionOutputByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::querySpentTransactionOutputByTransactionOutputId(string transactionHash,uint64_t transactionOutputIndex) {
         vector<unsigned char> bytesTransactionOutputHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildTransactionOutputIdToSpentTransactionOutputHeightKey(transactionHash,transactionOutputIndex));
         if(bytesTransactionOutputHeight.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil::bytesToUint64(bytesTransactionOutputHeight));
     }
 
 
-    TransactionOutput BlockchainDatabase::queryTransactionOutputByAddress(string address) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::queryTransactionOutputByAddress(string address) {
         vector<unsigned char> bytesTransactionOutputHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildAddressToTransactionOutputHeightKey(address));
         if(bytesTransactionOutputHeight.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil::bytesToUint64(bytesTransactionOutputHeight));
     }
 
 
-    TransactionOutput BlockchainDatabase::queryUnspentTransactionOutputByAddress(string address) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::queryUnspentTransactionOutputByAddress(string address) {
         vector<unsigned char> bytesTransactionOutputHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildAddressToUnspentTransactionOutputHeightKey(address));
         if(bytesTransactionOutputHeight.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil::bytesToUint64(bytesTransactionOutputHeight));
     }
 
 
-    TransactionOutput BlockchainDatabase::querySpentTransactionOutputByAddress(string address) {
+    unique_ptr<TransactionOutput> BlockchainDatabase::querySpentTransactionOutputByAddress(string address) {
         vector<unsigned char> bytesTransactionOutputHeight = KvDbUtil::get(getBlockchainDatabasePath(), BlockchainDatabaseKeyTool::buildAddressToSpentTransactionOutputHeightKey(address));
         if(bytesTransactionOutputHeight.empty()){
-            return NullUtil::newNullTransactionOutput();
+            return unique_ptr<TransactionOutput>(nullptr);
         }
         return queryTransactionOutputByTransactionOutputHeight(ByteUtil::bytesToUint64(bytesTransactionOutputHeight));
     }
@@ -798,14 +800,14 @@ namespace core{
  * 存储地址到交易输出
  */
     void BlockchainDatabase::storeAddressToTransactionOutputHeight(KvWriteBatch *kvWriteBatch, Block *block, BlockchainAction blockchainAction) {
-        vector<Transaction> transactions = block->transactions;
-        if(!transactions.empty()){
+        vector<Transaction> &transactions = block->transactions;
+        if(transactions.empty()){
             return;
         }
-        for(Transaction transaction : transactions){
+        for(Transaction &transaction : transactions){
             vector<TransactionOutput> outputs = transaction.outputs;
             if(!outputs.empty()){
-                for (TransactionOutput transactionOutput:outputs){
+                for (TransactionOutput &transactionOutput:outputs){
                     vector<unsigned char> addressToTransactionOutputHeightKey = BlockchainDatabaseKeyTool::buildAddressToTransactionOutputHeightKey(transactionOutput.address);
                     if(blockchainAction == ADD_BLOCK){
                         kvWriteBatch->put(addressToTransactionOutputHeightKey, ByteUtil::uint64ToBytes(transactionOutput.transactionOutputHeight));
@@ -821,7 +823,7 @@ namespace core{
  */
     void BlockchainDatabase::storeAddressToSpentTransactionOutputHeight(KvWriteBatch *kvWriteBatch, Block *block, BlockchainAction blockchainAction) {
         vector<Transaction> transactions = block->transactions;
-        if(!transactions.empty()){
+        if(transactions.empty()){
             return;
         }
         for(Transaction transaction : transactions){
@@ -992,8 +994,8 @@ namespace core{
         if(!inputs.empty()){
             for(TransactionInput transactionInput : inputs) {
                 TransactionOutput unspentTransactionOutput = transactionInput.unspentTransactionOutput;
-                TransactionOutput transactionOutput = queryUnspentTransactionOutputByTransactionOutputId(unspentTransactionOutput.transactionHash,unspentTransactionOutput.transactionOutputIndex);
-                if(NullUtil::isNullTransactionOutput(transactionOutput)){
+                unique_ptr<TransactionOutput> transactionOutput = queryUnspentTransactionOutputByTransactionOutputId(unspentTransactionOutput.transactionHash,unspentTransactionOutput.transactionOutputIndex);
+                if(!transactionOutput.get()){
                     LogUtil::debug("交易数据异常：交易输入不是未花费交易输出。");
                     return false;
                 }
@@ -1034,16 +1036,16 @@ namespace core{
 
 
 //region dto to model
-    Block BlockchainDatabase::blockDto2Block(BlockDto *blockDto) {
+    unique_ptr<Block> BlockchainDatabase::blockDto2Block(BlockDto *blockDto) {
         string previousBlockHash = blockDto->previousHash;
-        Block previousBlock = queryBlockByBlockHash(previousBlockHash);
+        unique_ptr<Block> previousBlock = queryBlockByBlockHash(previousBlockHash);
 
         Block block;
         block.timestamp=blockDto->timestamp;
         block.previousHash=previousBlockHash;
         block.nonce=blockDto->nonce;
 
-        long blockHeight = BlockTool::getNextBlockHeight(&previousBlock);
+        uint64_t blockHeight = BlockTool::getNextBlockHeight(previousBlock);
         block.height=blockHeight;
 
         vector<Transaction> transactions = transactionDtos2Transactions(&blockDto->transactions);
@@ -1065,31 +1067,32 @@ namespace core{
          * 此处预检，只是想预先抵消绝大部分的攻击。
          */
         if(!getConsensus()->checkConsensus(this,&block)){
-            throw new exception("区块预检失败。");
+            throw exception("区块预检失败。");
         }
-        return block;
+        return unique_ptr<Block>(new Block(block));
+
     }
     vector<Transaction> BlockchainDatabase::transactionDtos2Transactions(vector<TransactionDto> *transactionDtos) {
         vector<Transaction> transactions;
         if(transactionDtos != nullptr){
             for(TransactionDto &transactionDto:*transactionDtos){
-                Transaction transaction = transactionDto2Transaction(&transactionDto);
-                transactions.push_back(transaction);
+                unique_ptr<Transaction> transaction = transactionDto2Transaction(&transactionDto);
+                transactions.push_back(*transaction.get());
             }
         }
         return transactions;
     }
-    Transaction BlockchainDatabase::transactionDto2Transaction(TransactionDto *transactionDto) {
+    unique_ptr<Transaction> BlockchainDatabase::transactionDto2Transaction(TransactionDto *transactionDto) {
         vector<TransactionInput> inputs;
         vector<TransactionInputDto> transactionInputDtos = transactionDto->inputs;
         if(!transactionInputDtos.empty()){
             for (TransactionInputDto transactionInputDto:transactionInputDtos){
-                TransactionOutput unspentTransactionOutput = queryUnspentTransactionOutputByTransactionOutputId(transactionInputDto.transactionHash,transactionInputDto.transactionOutputIndex);
-                if(NullUtil::isNullTransactionOutput(unspentTransactionOutput)){
-                    throw new exception("非法交易。交易输入并不是一笔未花费交易输出。");
+                unique_ptr<TransactionOutput> unspentTransactionOutput = queryUnspentTransactionOutputByTransactionOutputId(transactionInputDto.transactionHash,transactionInputDto.transactionOutputIndex);
+                if(!unspentTransactionOutput.get()){
+                    throw exception("非法交易。交易输入并不是一笔未花费交易输出。");
                 }
                 TransactionInput transactionInput;
-                transactionInput.unspentTransactionOutput = unspentTransactionOutput;
+                transactionInput.unspentTransactionOutput = *unspentTransactionOutput.get();
                 InputScript inputScript = inputScriptDto2InputScript(&transactionInputDto.inputScript);
                 transactionInput.inputScript = inputScript;
                 inputs.push_back(transactionInput);
@@ -1111,7 +1114,7 @@ namespace core{
         transaction.transactionHash=TransactionDtoTool::calculateTransactionHash(*transactionDto);
         transaction.inputs=inputs;
         transaction.outputs=outputs;
-        return transaction;
+        return unique_ptr<Transaction>(new Transaction(transaction));
     }
     TransactionOutput BlockchainDatabase::transactionOutputDto2TransactionOutput(TransactionOutputDto *transactionOutputDto) {
         TransactionOutput transactionOutput;

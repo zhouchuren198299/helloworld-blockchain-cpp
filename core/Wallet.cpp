@@ -8,7 +8,6 @@
 #include "../util/ByteUtil.h"
 #include "../util/FileUtil.h"
 #include "../util/EncodeDecodeTool.h"
-#include "../util/NullUtil.h"
 #include "../util/StringUtil.h"
 
 
@@ -44,8 +43,8 @@ namespace core{
         if(!bytesAccounts.empty()){
             for(vector<unsigned char> &bytesAccount:bytesAccounts){
                 Account account = EncodeDecodeTool::decode(bytesAccount,Account{});
-                TransactionOutput utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(account.address);
-                if(!NullUtil::isNullTransactionOutput(utxo) && utxo.value > 0){
+                unique_ptr<TransactionOutput> utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(account.address);
+                if(utxo.get() && utxo->value > 0){
                     accounts.push_back(account);
                 }
             }
@@ -77,9 +76,9 @@ namespace core{
 
 
     uint64_t Wallet::getBalanceByAddress(string address) {
-        TransactionOutput utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(address);
-        if(NullUtil::isNullTransactionOutput(utxo)){
-            return utxo.value;
+        unique_ptr<TransactionOutput> utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(address);
+        if(utxo.get()){
+            return utxo->value;
         }
         return 0L;
     }
@@ -115,14 +114,14 @@ namespace core{
         vector<Account> allAccounts = getNonZeroBalanceAccounts();
         if(!allAccounts.empty()){
             for(Account account:allAccounts){
-                TransactionOutput utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(account.address);
+                unique_ptr<TransactionOutput> utxo = blockchainDatabase->queryUnspentTransactionOutputByAddress(account.address);
                 //构建一个新的付款方
                 Payer payer;
                 payer.privateKey=account.privateKey;
                 payer.address=account.address;
-                payer.transactionHash=utxo.transactionHash;
-                payer.transactionOutputIndex=utxo.transactionOutputIndex;
-                payer.value=utxo.value;
+                payer.transactionHash=utxo->transactionHash;
+                payer.transactionOutputIndex=utxo->transactionOutputIndex;
+                payer.value=utxo->value;
                 payers.push_back(payer);
                 //设置默认手续费
                 uint64_t fee = 0L;
@@ -131,11 +130,11 @@ namespace core{
                     //创建一个找零账户，并将找零账户保存在钱包里。
                     Account changeAccount = createAndSaveAccount();
                     //创建一个找零收款方
-                    Payee changePayee = createChangePayee(payers,nonChangePayees,changeAccount.address,fee);
+                    unique_ptr<Payee> changePayee = createChangePayee(payers,nonChangePayees,changeAccount.address,fee);
                     //创建收款方(收款方=[非找零]收款方+[找零]收款方)
                     vector<Payee> payees(nonChangePayees);
-                    if(!NullUtil::isNullPayee(changePayee)){
-                        payees.push_back(changePayee);
+                    if(!changePayee.get()){
+                        payees.push_back(*changePayee.get());
                     }
                     //构造交易
                     TransactionDto transactionDto = buildTransaction(payers,payees);
@@ -147,7 +146,7 @@ namespace core{
                     response.fee=fee;
                     response.payers=payers;
                     response.nonChangePayees=nonChangePayees;
-                    response.changePayee=changePayee;
+                    response.changePayee=*changePayee.get();
                     response.payees=payees;
                     return response;
                 }
@@ -181,17 +180,17 @@ namespace core{
         bool haveEnoughMoneyToPay = changeValue0>=0;
         return haveEnoughMoneyToPay;
     }
-    Payee Wallet::createChangePayee(vector<Payer> payers, vector<Payee> payees, string changeAddress, uint64_t fee) {
+    unique_ptr<Payee> Wallet::createChangePayee(vector<Payer> payers, vector<Payee> payees, string changeAddress, uint64_t fee) {
         //计算找零金额
         uint64_t changeValue0 = changeValue(payers,payees,fee);
-        if(changeValue0 >0){
-            //构造找零收款方
-            Payee changePayee;
-            changePayee.address=changeAddress;
-            changePayee.value=changeValue0;
-            return changePayee;
+        if(changeValue0 <= 0){
+            return unique_ptr<Payee>(nullptr);
         }
-        return NullUtil::newNullPayee();
+        //构造找零收款方
+        Payee changePayee;
+        changePayee.address=changeAddress;
+        changePayee.value=changeValue0;
+        return unique_ptr<Payee>(new Payee(changePayee));
     }
     uint64_t Wallet::changeValue(vector<Payer> payers, vector<Payee> payees, uint64_t fee) {
         //交易输入总金额

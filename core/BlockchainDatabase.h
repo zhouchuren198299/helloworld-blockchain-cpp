@@ -90,17 +90,17 @@ namespace core{
         /**
          * 查询区块链上的最后一个区块
          */
-        Block queryTailBlock();
+        unique_ptr<Block> queryTailBlock();
 
         /**
          * 在区块链中根据区块高度查找区块
          */
-        Block queryBlockByBlockHeight(uint64_t blockHeight);
+        unique_ptr<Block> queryBlockByBlockHeight(uint64_t blockHeight);
 
         /**
          * 在区块链中根据区块哈希查找区块
          */
-        Block queryBlockByBlockHash(string blockHash);
+        unique_ptr<Block> queryBlockByBlockHash(string blockHash);
         //endregion
 
 
@@ -109,23 +109,23 @@ namespace core{
         /**
          * 根据交易高度查询交易。交易高度从1开始。
          */
-        Transaction queryTransactionByTransactionHeight(uint64_t transactionHeight);
+        unique_ptr<Transaction> queryTransactionByTransactionHeight(uint64_t transactionHeight);
 
         /**
          * 在区块链中根据交易哈希查找交易
          */
-        Transaction queryTransactionByTransactionHash(string transactionHash);
+        unique_ptr<Transaction> queryTransactionByTransactionHash(string transactionHash);
 
         /**
          * 查询来源交易：查询交易输出产生于的那笔交易
          */
-        Transaction
+        unique_ptr<Transaction>
         querySourceTransactionByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
 
         /**
          * 查询去向交易：查询使用交易输出的那笔交易
          */
-        Transaction
+        unique_ptr<Transaction>
         queryDestinationTransactionByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
         //endregion
 
@@ -135,24 +135,24 @@ namespace core{
         /**
          * 根据 交易输出高度 查找 交易输出
          */
-        TransactionOutput queryTransactionOutputByTransactionOutputHeight(uint64_t transactionOutputHeight);
+        unique_ptr<TransactionOutput> queryTransactionOutputByTransactionOutputHeight(uint64_t transactionOutputHeight);
 
         /**
          * 根据 交易输出ID 查找 交易输出
          */
-        TransactionOutput
+        unique_ptr<TransactionOutput>
         queryTransactionOutputByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
 
         /**
          * 根据 交易输出ID 查找 未花费交易输出
          */
-        TransactionOutput
+        unique_ptr<TransactionOutput>
         queryUnspentTransactionOutputByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
 
         /**
          * 根据 交易输出ID 查找 已花费交易输出
          */
-        TransactionOutput
+        unique_ptr<TransactionOutput>
         querySpentTransactionOutputByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
         //endregion
 
@@ -162,29 +162,29 @@ namespace core{
         /**
          * 根据 地址 查询 交易输出
          */
-        TransactionOutput queryTransactionOutputByAddress(string address);
+        unique_ptr<TransactionOutput> queryTransactionOutputByAddress(string address);
 
         /**
          * 根据 地址 查询 未花费交易输出
          */
-        TransactionOutput queryUnspentTransactionOutputByAddress(string address);
+        unique_ptr<TransactionOutput> queryUnspentTransactionOutputByAddress(string address);
 
         /**
          * 根据 地址 查询 已花费交易输出
          */
-        TransactionOutput querySpentTransactionOutputByAddress(string address);
+        unique_ptr<TransactionOutput> querySpentTransactionOutputByAddress(string address);
         //endregion
 
         //region
         /**
          * block dto to block model
          */
-        Block blockDto2Block(BlockDto *blockDto);
+        unique_ptr<Block> blockDto2Block(BlockDto *blockDto);
 
         /**
          * transaction dto to transaction model
          */
-        Transaction transactionDto2Transaction(TransactionDto *transactionDto);
+        unique_ptr<Transaction> transactionDto2Transaction(TransactionDto *transactionDto);
         //endregion
 
 

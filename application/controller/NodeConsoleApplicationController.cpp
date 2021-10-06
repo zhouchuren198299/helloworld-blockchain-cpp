@@ -63,13 +63,13 @@ namespace controller{
         if(StringUtil::isEmpty(ip)){
             requestParamIllegal(res);
         }
-        //TODO
-/*        if(blockchainNetCore->getNodeService()->queryNode(ip) != null){
+
+        if(!blockchainNetCore->getNodeService()->queryNode(ip).get()){
             //节点存在，认为是成功添加。
             AddNodeResponse response;
             response.addNodeSuccess=true;
             return success(res,response);
-        }*/
+        }
         Node node;
         node.ip=ip;
         node.blockchainHeight=0;

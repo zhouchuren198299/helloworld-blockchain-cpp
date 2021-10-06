@@ -52,15 +52,15 @@ namespace core{
         /**
          * 根据区块高度查询区块
          */
-        Block queryBlockByBlockHeight(uint64_t blockHeight);
+        unique_ptr<Block> queryBlockByBlockHeight(uint64_t blockHeight);
         /**
          * 根据区块哈希查询区块
          */
-        Block queryBlockByBlockHash(string blockHash);
+        unique_ptr<Block> queryBlockByBlockHash(string blockHash);
         /**
          * 查询区块链尾巴区块
          */
-        Block queryTailBlock();
+        unique_ptr<Block> queryTailBlock();
 
 
 
@@ -68,12 +68,12 @@ namespace core{
         /**
          * 根据交易哈希获取交易
          */
-        Transaction queryTransactionByTransactionHash(string transactionHash) ;
+        unique_ptr<Transaction> queryTransactionByTransactionHash(string transactionHash) ;
         /**
          * 根据交易高度获取交易
          * @param transactionHeight 交易高度。注意：区块高度从1开始。
          */
-        Transaction queryTransactionByTransactionHeight(uint64_t transactionHeight) ;
+        unique_ptr<Transaction> queryTransactionByTransactionHeight(uint64_t transactionHeight) ;
 
 
 
@@ -81,15 +81,15 @@ namespace core{
         /**
          * 根据地址获取[交易输出]。
          */
-        TransactionOutput queryTransactionOutputByAddress(string address) ;
+        unique_ptr<TransactionOutput> queryTransactionOutputByAddress(string address) ;
         /**
          * 根据地址获取[未花费交易输出]。
          */
-        TransactionOutput queryUnspentTransactionOutputByAddress(string address) ;
+        unique_ptr<TransactionOutput> queryUnspentTransactionOutputByAddress(string address) ;
         /**
          * 根据地址获取[已花费交易输出]。
          */
-        TransactionOutput querySpentTransactionOutputByAddress(string address) ;
+        unique_ptr<TransactionOutput> querySpentTransactionOutputByAddress(string address) ;
 
 
 
@@ -109,7 +109,7 @@ namespace core{
         /**
          * 根据交易哈希查询未确认交易
          */
-        TransactionDto queryUnconfirmedTransactionByTransactionHash(string transactionHash) ;
+        unique_ptr<TransactionDto> queryUnconfirmedTransactionByTransactionHash(string transactionHash) ;
 
 
 
@@ -117,11 +117,11 @@ namespace core{
         /**
          * block dto to block model
          */
-        Block blockDto2Block(BlockDto *blockDto) ;
+        unique_ptr<Block> blockDto2Block(BlockDto *blockDto) ;
         /**
          * transaction dto to transaction model
          */
-        Transaction transactionDto2Transaction(TransactionDto *transactionDto) ;
+        unique_ptr<Transaction> transactionDto2Transaction(TransactionDto *transactionDto) ;
         //endregion
 
 

@@ -5,7 +5,6 @@
 #include "BlockSearcher.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
-#include "../util/NullUtil.h"
 #include "../core/tool/BlockTool.h"
 #include "../core/tool/Model2DtoTool.h"
 #include "../core/tool/BlockDtoTool.h"
@@ -70,7 +69,7 @@ namespace netcore{
             boolean isHardFork = isHardForkNode(masterBlockchainCore,node);
             if(!isHardFork){
                 //求分叉区块的高度
-                long forkBlockHeight = getForkBlockHeight(masterBlockchainCore,node);
+                uint64_t forkBlockHeight = getForkBlockHeight(masterBlockchainCore,node);
                 //复制"主区块链核心"的区块至"从区块链核心"
                 duplicateBlockchainCore(masterBlockchainCore, slaveBlockchainCore);
                 //删除"从区块链核心"已分叉区块
@@ -82,7 +81,7 @@ namespace netcore{
             }
         } else {
             //未分叉，同步远程节点区块至主区块链核心
-            long nextBlockHeight = masterBlockchainCore->queryBlockchainHeight()+1;
+            uint64_t nextBlockHeight = masterBlockchainCore->queryBlockchainHeight()+1;
             synchronizeBlocks(masterBlockchainCore,node,nextBlockHeight);
         }
     }
@@ -95,24 +94,24 @@ namespace netcore{
     void BlockSearcher::duplicateBlockchainCore(BlockchainCore *fromBlockchainCore,BlockchainCore *toBlockchainCore) {
         //删除'去向区块链核心'区块
         while (true){
-            Block toBlockchainTailBlock = toBlockchainCore->queryTailBlock() ;
-            if(NullUtil::isNullBlock(toBlockchainTailBlock)){
+            unique_ptr<Block> toBlockchainTailBlock = toBlockchainCore->queryTailBlock() ;
+            if(!toBlockchainTailBlock.get()){
                 break;
             }
-            Block fromBlockchainBlock = fromBlockchainCore->queryBlockByBlockHeight(toBlockchainTailBlock.height);
-            if(BlockTool::isBlockEquals(&fromBlockchainBlock,&toBlockchainTailBlock)){
+            unique_ptr<Block> fromBlockchainBlock = fromBlockchainCore->queryBlockByBlockHeight(toBlockchainTailBlock->height);
+            if(BlockTool::isBlockEquals(fromBlockchainBlock.get(),toBlockchainTailBlock.get())){
                 break;
             }
             toBlockchainCore->deleteTailBlock();
         }
         //增加'去向区块链核心'区块
         while (true){
-            long toBlockchainHeight = toBlockchainCore->queryBlockchainHeight();
-            Block nextBlock = fromBlockchainCore->queryBlockByBlockHeight(toBlockchainHeight+1) ;
-            if(NullUtil::isNullBlock(nextBlock)){
+            uint64_t toBlockchainHeight = toBlockchainCore->queryBlockchainHeight();
+            unique_ptr<Block> nextBlock = fromBlockchainCore->queryBlockByBlockHeight(toBlockchainHeight+1) ;
+            if(!nextBlock.get()){
                 break;
             }
-            toBlockchainCore->addBlock(&nextBlock);
+            toBlockchainCore->addBlock(nextBlock.get());
         }
     }
     /**
@@ -135,8 +134,8 @@ namespace netcore{
 
     uint64_t BlockSearcher::getForkBlockHeight(BlockchainCore *blockchainCore, Node node) {
         //求分叉区块的高度，此时已知分叉了，从当前高度依次递减1，判断高度相同的区块的是否相等，若相等，(高度+1)即开始分叉高度。
-        long masterBlockchainHeight = blockchainCore->queryBlockchainHeight();
-        long forkBlockHeight = masterBlockchainHeight;
+        uint64_t masterBlockchainHeight = blockchainCore->queryBlockchainHeight();
+        uint64_t forkBlockHeight = masterBlockchainHeight;
         while (true) {
             if (forkBlockHeight <= GenesisBlockSetting::HEIGHT) {
                 break;
@@ -149,11 +148,11 @@ namespace netcore{
                 break;
             }
             BlockDto &remoteBlock = getBlockResponse->block;
-            if(NullUtil::isNullBlockDto(remoteBlock)){
+/* TODO           if(NullUtil::isNullBlockDto(remoteBlock)){
                 break;
-            }
-            Block localBlock = blockchainCore->queryBlockByBlockHeight(forkBlockHeight);
-            if(BlockDtoTool::isBlockEquals(Model2DtoTool::block2BlockDto(&localBlock),remoteBlock)){
+            }*/
+            unique_ptr<Block> localBlock = blockchainCore->queryBlockByBlockHeight(forkBlockHeight);
+            if(BlockDtoTool::isBlockEquals(Model2DtoTool::block2BlockDto(localBlock.get()),remoteBlock)){
                 break;
             }
             forkBlockHeight--;
@@ -172,9 +171,9 @@ namespace netcore{
                 break;
             }
             BlockDto remoteBlock = getBlockResponse->block;
-            if(NullUtil::isNullBlockDto(remoteBlock)){
+/*TODO            if(NullUtil::isNullBlockDto(remoteBlock)){
                 break;
-            }
+            }*/
             boolean isAddBlockSuccess = blockchainCore->addBlockDto(&remoteBlock);
             if(!isAddBlockSuccess){
                 break;
@@ -184,12 +183,12 @@ namespace netcore{
     }
 
     bool BlockSearcher::isForkNode(BlockchainCore *blockchainCore, Node node) {
-        Block block = blockchainCore->queryTailBlock();
-        if(NullUtil::isNullBlock(block)){
+        unique_ptr<Block> block = blockchainCore->queryTailBlock();
+        if(!block.get()){
             return false;
         }
         GetBlockRequest getBlockRequest;
-        getBlockRequest.blockHeight=block.height;
+        getBlockRequest.blockHeight=block->height;
         NodeClient nodeClient(node.ip);
         unique_ptr<GetBlockResponse> getBlockResponse = nodeClient.getBlock(getBlockRequest);
         //没有查询到区块，这里则认为远程节点没有该高度的区块存在，远程节点的高度没有本地区块链高度高，所以不分叉。
@@ -197,11 +196,11 @@ namespace netcore{
             return false;
         }
         BlockDto &blockDto = getBlockResponse->block;
-        if(NullUtil::isNullBlockDto(blockDto)){
+/*TODO        if(NullUtil::isNullBlockDto(blockDto)){
             return false;
-        }
+        }*/
         string blockHash = BlockDtoTool::calculateBlockHash(blockDto);
-        return !StringUtil::equals(block.hash, blockHash);
+        return !StringUtil::equals(block->hash, blockHash);
     }
 
     bool BlockSearcher::isHardFork(BlockchainCore *blockchainCore1, BlockchainCore *blockchainCore2) {
@@ -215,23 +214,23 @@ namespace netcore{
             shorter = blockchainCore1;
         }
 
-        long shorterBlockchainHeight = shorter->queryBlockchainHeight();
+        uint64_t shorterBlockchainHeight = shorter->queryBlockchainHeight();
         if(shorterBlockchainHeight < netCoreConfiguration->getHardForkBlockCount()){
             return false;
         }
 
-        long criticalPointBlocHeight = shorterBlockchainHeight-netCoreConfiguration->getHardForkBlockCount()+1;
-        Block longerBlock = longer->queryBlockByBlockHeight(criticalPointBlocHeight);
-        Block shorterBlock = shorter->queryBlockByBlockHeight(criticalPointBlocHeight);
-        return !BlockTool::isBlockEquals(&longerBlock, &shorterBlock);
+        uint64_t criticalPointBlocHeight = shorterBlockchainHeight-netCoreConfiguration->getHardForkBlockCount()+1;
+        unique_ptr<Block> longerBlock = longer->queryBlockByBlockHeight(criticalPointBlocHeight);
+        unique_ptr<Block> shorterBlock = shorter->queryBlockByBlockHeight(criticalPointBlocHeight);
+        return !BlockTool::isBlockEquals(longerBlock.get(), shorterBlock.get());
     }
 
     bool BlockSearcher::isHardForkNode(BlockchainCore *blockchainCore, Node node) {
-        long blockchainHeight = blockchainCore->queryBlockchainHeight();
+        uint64_t blockchainHeight = blockchainCore->queryBlockchainHeight();
         if (blockchainHeight < netCoreConfiguration->getHardForkBlockCount()) {
             return false;
         }
-        long criticalPointBlocHeight = blockchainHeight-netCoreConfiguration->getHardForkBlockCount()+1;
+        uint64_t criticalPointBlocHeight = blockchainHeight-netCoreConfiguration->getHardForkBlockCount()+1;
         if(criticalPointBlocHeight <= GenesisBlockSetting::HEIGHT){
             return false;
         }
@@ -243,10 +242,11 @@ namespace netcore{
             return false;
         }
         BlockDto &remoteBlock = getBlockResponse->block;
-        if(NullUtil::isNullBlockDto(remoteBlock)){
+/*
+ * TODO        if(NullUtil::isNullBlockDto(remoteBlock)){
             return false;
-        }
-        Block localBlock = blockchainCore->queryBlockByBlockHeight(criticalPointBlocHeight);
-        return !BlockDtoTool::isBlockEquals(Model2DtoTool::block2BlockDto(&localBlock),remoteBlock);
+        }*/
+        unique_ptr<Block> localBlock = blockchainCore->queryBlockByBlockHeight(criticalPointBlocHeight);
+        return !BlockDtoTool::isBlockEquals(Model2DtoTool::block2BlockDto(localBlock.get()),remoteBlock);
     }
 }

@@ -7,7 +7,6 @@
 #include "../netcoreclient/NodeClient.h"
 #include "../util/LogUtil.h"
 #include "../util/ThreadUtil.h"
-#include "../util/NullUtil.h"
 
 using namespace netcoreclient;
 
@@ -35,14 +34,14 @@ namespace netcore{
         }
 
         for(Node node:nodes){
-            Block block = blockchainCore->queryTailBlock();
-            if(NullUtil::isNullBlock(block)){
+            unique_ptr<Block> block = blockchainCore->queryTailBlock();
+            if(!block.get()){
                 return;
             }
-            if(block.height <= node.blockchainHeight){
+            if(block->height <= node.blockchainHeight){
                 continue;
             }
-            BlockDto blockDto = Model2DtoTool::block2BlockDto(&block);
+            BlockDto blockDto = Model2DtoTool::block2BlockDto(block.get());
             NodeClient nodeClient(node.ip);
             PostBlockRequest postBlockRequest;
             postBlockRequest.block=blockDto;

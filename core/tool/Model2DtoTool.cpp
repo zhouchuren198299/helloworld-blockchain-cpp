@@ -8,6 +8,9 @@
 namespace Model2DtoTool{
 
     BlockDto block2BlockDto(Block *block) {
+        if(block == nullptr){
+            throw exception();
+        }
         vector<TransactionDto> transactionDtos;
         vector<Transaction> transactions = block->transactions;
         if(!transactions.empty()){

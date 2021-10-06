@@ -25,12 +25,12 @@ namespace service {
     public:
         BlockchainBrowserApplicationService(BlockchainNetCore *blockchainNetCore);
     public:
-        TransactionOutputVo3 queryTransactionOutputByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
-        TransactionOutputVo3 queryTransactionOutputByAddress(string address);
-        TransactionVo queryTransactionByTransactionHash(string transactionHash);
+        unique_ptr<TransactionOutputVo3> queryTransactionOutputByTransactionOutputId(string transactionHash, uint64_t transactionOutputIndex);
+        unique_ptr<TransactionOutputVo3> queryTransactionOutputByAddress(string address);
+        unique_ptr<TransactionVo> queryTransactionByTransactionHash(string transactionHash);
         vector<TransactionVo> queryTransactionListByBlockHashTransactionHeight(string blockHash, uint64_t from, uint64_t size);
-        BlockVo queryBlockViewByBlockHeight(uint64_t blockHeight);
-        UnconfirmedTransactionVo queryUnconfirmedTransactionByTransactionHash(string transactionHash);
+        unique_ptr<BlockVo> queryBlockViewByBlockHeight(uint64_t blockHeight);
+        unique_ptr<UnconfirmedTransactionVo> queryUnconfirmedTransactionByTransactionHash(string transactionHash);
     };
 };
 

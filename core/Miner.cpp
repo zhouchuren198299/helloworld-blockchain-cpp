@@ -9,8 +9,6 @@
 #include "../util/ByteUtil.h"
 #include "../util/LogUtil.h"
 #include "../util/StringUtil.h"
-#include "../util/NullUtil.h"
-
 #include "tool/Model2DtoTool.h"
 #include "tool/ScriptTool.h"
 #include "../setting/BlockSetting.h"
@@ -112,17 +110,17 @@ namespace core{
     Block Miner::buildMiningBlock(BlockchainDatabase *blockchainDatabase, UnconfirmedTransactionDatabase *unconfirmedTransactionDatabase, Account *minerAccount) {
         uint64_t timestamp = TimeUtil::millisecondTimestamp();
 
-        Block tailBlock = blockchainDatabase->queryTailBlock();
+        unique_ptr<Block> tailBlock = blockchainDatabase->queryTailBlock();
         Block nonNonceBlock;
         //这个挖矿时间不需要特别精确，没必要非要挖出矿的前一霎那时间。
         nonNonceBlock.timestamp=timestamp;
 
-        if(NullUtil::isNullBlock(tailBlock)){
+        if(!tailBlock.get()){
             nonNonceBlock.height=GenesisBlockSetting::HEIGHT +1;
             nonNonceBlock.previousHash=GenesisBlockSetting::HASH;
         } else {
-            nonNonceBlock.height=tailBlock.height+1;
-            nonNonceBlock.previousHash=tailBlock.hash;
+            nonNonceBlock.height=tailBlock->height+1;
+            nonNonceBlock.previousHash=tailBlock->hash;
         }
         vector<Transaction> packingTransactions0 = packingTransactions(blockchainDatabase,unconfirmedTransactionDatabase);
         nonNonceBlock.transactions=packingTransactions0;
@@ -173,8 +171,8 @@ namespace core{
         if(!forMineBlockTransactionDtos.empty()){
             for(TransactionDto transactionDto:forMineBlockTransactionDtos){
                 try {
-                    Transaction transaction = blockchainDatabase->transactionDto2Transaction(&transactionDto);
-                    transactions.push_back(transaction);
+                    unique_ptr<Transaction> transaction = blockchainDatabase->transactionDto2Transaction(&transactionDto);
+                    transactions.push_back(*transaction.get());
                 } catch (exception e) {
                     string transactionHash = TransactionDtoTool::calculateTransactionHash(transactionDto);
                     LogUtil::error("类型转换异常,将从挖矿交易数据库中删除该交易["+transactionHash+"]。",e);

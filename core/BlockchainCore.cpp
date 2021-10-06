@@ -38,30 +38,30 @@ namespace core{
     uint64_t BlockchainCore::queryBlockchainHeight() {
         return blockchainDatabase->queryBlockchainHeight();
     }
-    Block BlockchainCore::queryBlockByBlockHeight(uint64_t blockHeight){
+    unique_ptr<Block> BlockchainCore::queryBlockByBlockHeight(uint64_t blockHeight){
         return blockchainDatabase->queryBlockByBlockHeight(blockHeight);
     }
-    Block BlockchainCore::queryBlockByBlockHash(string blockHash) {
+    unique_ptr<Block> BlockchainCore::queryBlockByBlockHash(string blockHash) {
         return blockchainDatabase->queryBlockByBlockHash(blockHash);
     }
-    Block BlockchainCore::queryTailBlock(){
+    unique_ptr<Block> BlockchainCore::queryTailBlock(){
         return blockchainDatabase->queryTailBlock();
     }
 
-    Transaction BlockchainCore::queryTransactionByTransactionHash(string transactionHash) {
+    unique_ptr<Transaction> BlockchainCore::queryTransactionByTransactionHash(string transactionHash) {
         return blockchainDatabase->queryTransactionByTransactionHash(transactionHash);
     }
-    Transaction BlockchainCore::queryTransactionByTransactionHeight(uint64_t transactionHeight) {
+    unique_ptr<Transaction> BlockchainCore::queryTransactionByTransactionHeight(uint64_t transactionHeight) {
         return blockchainDatabase->queryTransactionByTransactionHeight(transactionHeight);
     }
 
-    TransactionOutput BlockchainCore::queryTransactionOutputByAddress(string address) {
+    unique_ptr<TransactionOutput> BlockchainCore::queryTransactionOutputByAddress(string address) {
         return blockchainDatabase->queryTransactionOutputByAddress(address);
     }
-    TransactionOutput BlockchainCore::queryUnspentTransactionOutputByAddress(string address) {
+    unique_ptr<TransactionOutput> BlockchainCore::queryUnspentTransactionOutputByAddress(string address) {
         return blockchainDatabase->queryUnspentTransactionOutputByAddress(address);
     }
-    TransactionOutput BlockchainCore::querySpentTransactionOutputByAddress(string address) {
+    unique_ptr<TransactionOutput> BlockchainCore::querySpentTransactionOutputByAddress(string address) {
         return blockchainDatabase->querySpentTransactionOutputByAddress(address);
     }
 
@@ -77,17 +77,17 @@ namespace core{
     vector<TransactionDto> BlockchainCore::queryUnconfirmedTransactions(uint64_t from, uint64_t size) {
         return unconfirmedTransactionDatabase->selectTransactions(from,size);
     }
-    TransactionDto BlockchainCore::queryUnconfirmedTransactionByTransactionHash(string transactionHash) {
+    unique_ptr<TransactionDto> BlockchainCore::queryUnconfirmedTransactionByTransactionHash(string transactionHash) {
         return unconfirmedTransactionDatabase->selectTransactionByTransactionHash(transactionHash);
     }
 
 
 
     //region
-    Block BlockchainCore::blockDto2Block(BlockDto *blockDto) {
+    unique_ptr<Block> BlockchainCore::blockDto2Block(BlockDto *blockDto) {
         return blockchainDatabase->blockDto2Block(blockDto);
     }
-    Transaction BlockchainCore::transactionDto2Transaction(TransactionDto *transactionDto) {
+    unique_ptr<Transaction> BlockchainCore::transactionDto2Transaction(TransactionDto *transactionDto) {
         return blockchainDatabase->transactionDto2Transaction(transactionDto);
     }
     //endregion

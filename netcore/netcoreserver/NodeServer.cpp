@@ -92,8 +92,8 @@ namespace server{
 
     GetBlockResponse NodeServer::getBlock(GetBlockRequest request){
         try {
-            Block blockByBlockHeight = blockchainCore->queryBlockByBlockHeight(request.blockHeight);
-            BlockDto block = Model2DtoTool::block2BlockDto(&blockByBlockHeight);
+            unique_ptr<Block> blockByBlockHeight = blockchainCore->queryBlockByBlockHeight(request.blockHeight);
+            BlockDto block = Model2DtoTool::block2BlockDto(blockByBlockHeight.get());
             GetBlockResponse response;
             response.block=block;
             return response;
