@@ -1,24 +1,28 @@
+//
+// Created by 40906 on 2021/10/7.
+//
+
 #include <iostream>
-#include "crypto/Sha256Util.h"
-#include "crypto/Ripemd160Util.h"
-#include "crypto/Base58Util.h"
-#include "crypto/AccountUtil.h"
-#include "util/ByteUtil.h"
-#include "util/TimeUtil.h"
 #include <string>
-#include "dto/dto.h"
-#include "util/FileUtil.h"
-#include "core/tool/ResourcePathTool.h"
-#include "util/JsonUtil.h"
-#include "core/BlockchainCore.h"
-#include "core/BlockchainCoreFactory.h"
-#include "util/ThreadUtil.h"
-#include "util/SystemUtil.h"
-#include "netcore/netcoreconfiguration/NetCoreConfiguration.h"
-#include "netcore/netcoreservice/NodeService.h"
-#include "netcore/netcoreserver/NodeServer.h"
-#include "netcore/BlockchainNetCoreFactory.h"
 #include <assert.h>
+#include "../crypto/Sha256Util.h"
+#include "../crypto/Ripemd160Util.h"
+#include "../crypto/Base58Util.h"
+#include "../crypto/AccountUtil.h"
+#include "../util/ByteUtil.h"
+#include "../util/TimeUtil.h"
+#include "../util/FileUtil.h"
+#include "../util/JsonUtil.h"
+#include "../util/ThreadUtil.h"
+#include "../util/SystemUtil.h"
+#include "../netcoredto/netcoredto.h"
+#include "../core/tool/ResourcePathTool.h"
+#include "../core/BlockchainCore.h"
+#include "../core/BlockchainCoreFactory.h"
+#include "../netcore/netcoreconfiguration/NetCoreConfiguration.h"
+#include "../netcore/netcoreservice/NodeService.h"
+#include "../netcore/netcoreserver/NodeServer.h"
+#include "../netcore/BlockchainNetCoreFactory.h"
 
 using json = nlohmann::json;
 
@@ -31,31 +35,6 @@ using namespace service;
 using namespace server;
 using namespace netcore;
 
-
-
-#if 0
-int main()
-{
-    BlockchainNetCore *blockchainNetCore = BlockchainNetCoreFactory::createBlockchainNetCore(ResourcePathTool::getTestDataRootPath());
-    blockchainNetCore->start();
-
-    ThreadUtil::millisecondSleep(10 * 60 * 60 * 1000);
-}
-#endif
-
-
-
-#if 0
-int main()
-{
-    BlockchainCore *blockchainCore = BlockchainCoreFactory::createBlockchainCore(ResourcePathTool::getTestDataRootPath());
-    NetCoreConfiguration netCoreConfiguration = NetCoreConfiguration(ResourcePathTool::getTestDataRootPath());
-    NodeDao nodeDao = NodeDao(&netCoreConfiguration);
-    NodeService nodeService = NodeService(&nodeDao);
-    NodeServer nodeServer = NodeServer(&netCoreConfiguration,blockchainCore,&nodeService);
-    nodeServer.start();
-}
-#endif
 
 
 
@@ -119,24 +98,6 @@ int main()
 #endif
 
 
-#if 0
-int main()
-{
-    FileUtil::deleteDirectory(ResourcePathTool::getTestDataRootPath());
-    BlockchainCore *blockchainCore = BlockchainCoreFactory::createBlockchainCore(ResourcePathTool::getTestDataRootPath());
-    blockchainCore->getMiner()->setMinerMineMaxBlockHeight(3);
-    blockchainCore->getMiner()->active();
-    blockchainCore->start();
-    ThreadUtil::millisecondSleep(10000);
-    Block block1 = blockchainCore->queryBlockByBlockHeight(1);
-    cout << JsonUtil::toString(block1) << endl;
-    Block block2 = blockchainCore->queryBlockByBlockHeight(2);
-    cout << JsonUtil::toString(block2) << endl;
-    Block block3 = blockchainCore->queryBlockByBlockHeight(3);
-    cout << JsonUtil::toString(block3) << endl;
-}
-#endif
-
 
 #if 0
 int main()
@@ -160,12 +121,12 @@ int main()
     blockchainCore->addBlockDto(&blockDto2);
     blockchainCore->addBlockDto(&blockDto3);
 
-    Block block1 = blockchainCore->queryBlockByBlockHeight(1);
-    assert(block1Hash == block1.hash);
-    Block block2 = blockchainCore->queryBlockByBlockHeight(2);
-    assert(block2Hash == block2.hash);
-    Block block3 = blockchainCore->queryBlockByBlockHeight(3);
-    assert(block3Hash == block3.hash);
+    unique_ptr<Block> block1 = blockchainCore->queryBlockByBlockHeight(1);
+    assert(block1Hash == block1->hash);
+    unique_ptr<Block> block2 = blockchainCore->queryBlockByBlockHeight(2);
+    assert(block2Hash == block2->hash);
+    unique_ptr<Block> block3 = blockchainCore->queryBlockByBlockHeight(3);
+    assert(block3Hash == block3->hash);
 }
 #endif
 

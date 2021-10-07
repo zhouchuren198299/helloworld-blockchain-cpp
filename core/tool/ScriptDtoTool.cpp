@@ -75,12 +75,12 @@ namespace ScriptDtoTool{
         if(bytesScript == nullptr || bytesScript->size() == 0){
             return {};
         }
-        int start = 0;
+        uint64_t start = 0;
         vector<string> script;
         while (start<bytesScript->size()){
             uint64_t bytesOperationCodeLength = ByteUtil::bytesToUint64(ByteUtil::copy(*bytesScript,start,start + ByteUtil::BYTE8_BYTE_COUNT));
             start += ByteUtil::BYTE8_BYTE_COUNT;
-            vector<unsigned char> bytesOperationCode = ByteUtil::copy(*bytesScript,start, start+(int) bytesOperationCodeLength);
+            vector<unsigned char> bytesOperationCode = ByteUtil::copy(*bytesScript,start, start+bytesOperationCodeLength);
             start += bytesOperationCodeLength;
             if(ByteUtil::equals(OperationCodeEnum::OP_DUP.code,bytesOperationCode) ||
                ByteUtil::equals(OperationCodeEnum::OP_HASH160.code,bytesOperationCode) ||
@@ -94,7 +94,7 @@ namespace ScriptDtoTool{
 
                 uint64_t bytesOperationDataLength = ByteUtil::bytesToUint64(ByteUtil::copy(*bytesScript,start,start + ByteUtil::BYTE8_BYTE_COUNT));
                 start += ByteUtil::BYTE8_BYTE_COUNT;
-                vector<unsigned char> bytesOperationData = ByteUtil::copy(*bytesScript,start, start+(int) bytesOperationDataLength);
+                vector<unsigned char> bytesOperationData = ByteUtil::copy(*bytesScript,start, start+bytesOperationDataLength);
                 start += bytesOperationDataLength;
                 string stringOperationData = ByteUtil::bytesToHexString(bytesOperationData);
                 script.push_back(stringOperationData);

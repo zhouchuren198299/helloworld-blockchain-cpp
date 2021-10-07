@@ -133,8 +133,8 @@ namespace core{
                     unique_ptr<Payee> changePayee = createChangePayee(payers,nonChangePayees,changeAccount.address,fee);
                     //创建收款方(收款方=[非找零]收款方+[找零]收款方)
                     vector<Payee> payees(nonChangePayees);
-                    if(!changePayee.get()){
-                        payees.push_back(*changePayee.get());
+                    if(changePayee.get()){
+                        payees.push_back(*changePayee);
                     }
                     //构造交易
                     TransactionDto transactionDto = buildTransaction(payers,payees);
@@ -146,7 +146,9 @@ namespace core{
                     response.fee=fee;
                     response.payers=payers;
                     response.nonChangePayees=nonChangePayees;
-                    response.changePayee=*changePayee.get();
+                    if(changePayee.get()){
+                        response.changePayee=*changePayee;
+                    }
                     response.payees=payees;
                     return response;
                 }

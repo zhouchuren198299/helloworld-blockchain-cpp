@@ -6,16 +6,16 @@
 #define HELLOWORLD_BLOCKCHAIN_CPP_BLOCKDTOTOOL_H
 
 
-#include "../../dto/dto.h"
+#include "../../netcoredto/netcoredto.h"
 
 using namespace std;
 
 
 namespace BlockDtoTool {
 
-    string calculateBlockHash(dto::BlockDto blockDto);
-    string calculateBlockMerkleTreeRoot(dto::BlockDto blockDto);
-    bool isBlockEquals(dto::BlockDto block1, dto::BlockDto block2);
+    string calculateBlockHash(dto::BlockDto *blockDto);
+    string calculateBlockMerkleTreeRoot(dto::BlockDto *blockDto);
+    bool isBlockEquals(dto::BlockDto *block1, dto::BlockDto *block2);
 };
 
 

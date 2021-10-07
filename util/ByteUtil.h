@@ -33,8 +33,8 @@ namespace ByteUtil {
     vector<unsigned char> flat(vector<vector<unsigned char>> values);
     vector<unsigned char> flatAndConcatenateLength(vector<vector<unsigned char>> values);
 
-    vector<unsigned char> copy(vector<unsigned char> sourceBytes, int startPosition, int length);
-    void copyTo(vector<unsigned char> sourceBytes, int sourceStartPosition, int length, vector<unsigned char> &destinationBytes, int destinationStartPosition);
+    vector<unsigned char> copy(vector<unsigned char> sourceBytes, uint64_t startPosition, uint64_t length);
+    void copyTo(vector<unsigned char> sourceBytes, uint64_t sourceStartPosition, uint64_t length, vector<unsigned char> &destinationBytes, uint64_t destinationStartPosition);
 
     bool equals(vector<unsigned char> bytes1, vector<unsigned char> bytes2);
     vector<unsigned char> random32Bytes();

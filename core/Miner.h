@@ -19,9 +19,10 @@ namespace core{
         BlockchainDatabase *blockchainDatabase;
         UnconfirmedTransactionDatabase *unconfirmedTransactionDatabase;
     public:
-        //region 挖矿相关
         Miner(CoreConfiguration *coreConfiguration, Wallet *wallet, BlockchainDatabase *blockchainDatabase,
               UnconfirmedTransactionDatabase *unconfirmedTransactionDatabase);
+
+    public:
         /**
          * 启用矿工。
          * 矿工有两种状态：活动状态与非活动状态。
@@ -55,7 +56,7 @@ namespace core{
         uint64_t getMinerMineMaxBlockHeight( ) ;
         //endregion
 
-
+    public:
         //region get set
         Wallet * getWallet() ;
 

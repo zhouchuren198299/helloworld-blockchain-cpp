@@ -21,7 +21,7 @@ namespace BlockTool {
      */
     string calculateBlockHash(Block *block) {
         BlockDto blockDto = Model2DtoTool::block2BlockDto(block);
-        return BlockDtoTool::calculateBlockHash(blockDto);
+        return BlockDtoTool::calculateBlockHash(&blockDto);
     }
 
     /**
@@ -29,7 +29,7 @@ namespace BlockTool {
      */
     string calculateBlockMerkleTreeRoot(Block *block) {
         BlockDto blockDto = Model2DtoTool::block2BlockDto(block);
-        return BlockDtoTool::calculateBlockMerkleTreeRoot(blockDto);
+        return BlockDtoTool::calculateBlockMerkleTreeRoot(&blockDto);
     }
 
     /**

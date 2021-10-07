@@ -5,7 +5,7 @@
 #ifndef HELLOWORLD_BLOCKCHAIN_CPP_NODECLIENT_H
 #define HELLOWORLD_BLOCKCHAIN_CPP_NODECLIENT_H
 
-#include "../dto/dto.h"
+#include "../netcoredto/netcoredto.h"
 
 using namespace dto;
 

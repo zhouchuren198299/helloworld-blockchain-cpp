@@ -6,7 +6,7 @@
 #define HELLOWORLD_BLOCKCHAIN_CPP_MODEL2DTOTOOL_H
 
 
-#include "../../dto/dto.h"
+#include "../../netcoredto/netcoredto.h"
 #include "../model/model.h"
 
 using namespace dto;

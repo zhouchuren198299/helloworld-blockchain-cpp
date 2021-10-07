@@ -33,7 +33,7 @@ namespace netcore{
         }
 
         for(Node node:nodes){
-            long blockchainHeight = blockchainCore->queryBlockchainHeight();
+            uint64_t blockchainHeight = blockchainCore->queryBlockchainHeight();
             if(blockchainHeight <= node.blockchainHeight){
                 continue;
             }

@@ -152,7 +152,8 @@ namespace netcore{
                 break;
             }*/
             unique_ptr<Block> localBlock = blockchainCore->queryBlockByBlockHeight(forkBlockHeight);
-            if(BlockDtoTool::isBlockEquals(Model2DtoTool::block2BlockDto(localBlock.get()),remoteBlock)){
+            BlockDto blockDtoTemp = Model2DtoTool::block2BlockDto(localBlock.get());
+            if(BlockDtoTool::isBlockEquals(&blockDtoTemp,&remoteBlock)){
                 break;
             }
             forkBlockHeight--;
@@ -199,7 +200,7 @@ namespace netcore{
 /*TODO        if(NullUtil::isNullBlockDto(blockDto)){
             return false;
         }*/
-        string blockHash = BlockDtoTool::calculateBlockHash(blockDto);
+        string blockHash = BlockDtoTool::calculateBlockHash(&blockDto);
         return !StringUtil::equals(block->hash, blockHash);
     }
 
@@ -247,6 +248,7 @@ namespace netcore{
             return false;
         }*/
         unique_ptr<Block> localBlock = blockchainCore->queryBlockByBlockHeight(criticalPointBlocHeight);
-        return !BlockDtoTool::isBlockEquals(Model2DtoTool::block2BlockDto(localBlock.get()),remoteBlock);
+        BlockDto blockDtoTemp = Model2DtoTool::block2BlockDto(localBlock.get());
+        return !BlockDtoTool::isBlockEquals(&blockDtoTemp,&remoteBlock);
     }
 }

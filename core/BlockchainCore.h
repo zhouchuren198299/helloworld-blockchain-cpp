@@ -22,13 +22,11 @@ namespace core{
         BlockchainCore(CoreConfiguration *coreConfiguration, BlockchainDatabase *blockchainDatabase,
                        UnconfirmedTransactionDatabase *unconfirmedTransactionDatabase, Wallet *wallet, Miner *miner);
 
+    public:
         /**
          * 激活区块链核心。包含激活矿工等操作。
          */
         void start();
-
-
-
         /**
          * 将一个区块添加到区块链
          */
@@ -124,7 +122,7 @@ namespace core{
         unique_ptr<Transaction> transactionDto2Transaction(TransactionDto *transactionDto) ;
         //endregion
 
-
+    public:
         //region get set
         BlockchainDatabase * getBlockchainDatabase() ;
 

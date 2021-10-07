@@ -17,6 +17,7 @@ namespace core{
         string corePath;
     public:
         CoreConfiguration(string corePath);
+    public:
         /**
          * BlockchainCore数据存放路径
          */

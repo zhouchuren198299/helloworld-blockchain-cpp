@@ -2,7 +2,7 @@
 // Created by 40906 on 2021/9/19.
 //
 
-#include "dto.h"
+#include "netcoredto.h"
 
 
 namespace dto{

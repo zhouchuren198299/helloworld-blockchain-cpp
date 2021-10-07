@@ -30,6 +30,9 @@ namespace core{
         VirtualMachine *virtualMachine;
         CoreConfiguration *coreConfiguration;
     public:
+        BlockchainDatabase(CoreConfiguration *coreConfiguration, Incentive *incentive, Consensus *consensus,
+                           VirtualMachine *virtualMachine);
+    public:
         //region 区块增加与删除
         /**
          * 将一个区块添加到区块链的尾部。
@@ -186,19 +189,12 @@ namespace core{
          */
         unique_ptr<Transaction> transactionDto2Transaction(TransactionDto *transactionDto);
         //endregion
-
-
-        //region get set
+    public:
         Incentive* getIncentive();
-
         Consensus* getConsensus();
-
-        BlockchainDatabase(CoreConfiguration *coreConfiguration, Incentive *incentive, Consensus *consensus,
-                           VirtualMachine *virtualMachine);
 
     private:
         mutex mutex;
-
     private:
         /**
          * 根据区块信息组装WriteBatch对象

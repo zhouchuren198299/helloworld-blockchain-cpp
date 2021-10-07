@@ -9,7 +9,7 @@
 
 #include "netcoreconfiguration/NetCoreConfiguration.h"
 #include "netcoreserver/NodeServer.h"
-#include "../dto/dto.h"
+#include "../netcoredto/netcoredto.h"
 
 using namespace netcoreconfiguration;
 using namespace dto;

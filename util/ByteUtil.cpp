@@ -67,14 +67,14 @@ uint64_t ByteUtil::bytesToUint64(vector<unsigned char> bytes){
     return result;
 }
 
-vector<unsigned char> ByteUtil::copy(vector<unsigned char> sourceBytes, int startPosition, int length){
+vector<unsigned char> ByteUtil::copy(vector<unsigned char> sourceBytes, uint64_t startPosition, uint64_t length){
     vector<unsigned char> bytes;
     for(int i=startPosition;i<startPosition+length;i++){
         bytes.push_back(sourceBytes[i]);
     }
     return bytes;
 }
-void ByteUtil::copyTo(vector<unsigned char> sourceBytes, int sourceStartPosition, int length, vector<unsigned char> &destinationBytes, int destinationStartPosition){
+void ByteUtil::copyTo(vector<unsigned char> sourceBytes, uint64_t sourceStartPosition, uint64_t length, vector<unsigned char> &destinationBytes, uint64_t destinationStartPosition){
     while (destinationBytes.size()<destinationStartPosition+length){
         destinationBytes.push_back(0x00);
     }

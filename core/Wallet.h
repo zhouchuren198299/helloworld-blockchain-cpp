@@ -17,6 +17,8 @@ namespace core{
         BlockchainDatabase *blockchainDatabase;
     public:
         Wallet(CoreConfiguration *coreConfiguration, BlockchainDatabase *blockchainDatabase);
+
+    public:
         vector<Account> getAllAccounts();
         vector<Account> getNonZeroBalanceAccounts();
         Account createAccount();

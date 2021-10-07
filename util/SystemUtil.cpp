@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <string>
 #include <iostream>
+#include <shellapi.h>
 #else
 #include <unistd.h>
 #endif
@@ -43,6 +44,15 @@ int main()
 }
 #endif
 
+
+
+void SystemUtil::CallDefaultBrowser(string url){
+#if defined _WIN32 || defined _WIN64
+    ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+#else
+
+#endif
+}
 
 
 

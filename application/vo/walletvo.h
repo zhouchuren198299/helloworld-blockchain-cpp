@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "../../dto/dto.h"
+#include "../../netcoredto/netcoredto.h"
 #include "../../thirdpart/nlohmann/json.hpp"
 
 using namespace std;

@@ -12,6 +12,7 @@ using namespace std;
 namespace SystemUtil {
     void errorExit(string message, exception exception);
     string systemRootDirectory();
+    void CallDefaultBrowser(string url);
 };
 
 

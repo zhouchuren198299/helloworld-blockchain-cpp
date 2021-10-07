@@ -7,7 +7,7 @@
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../../thirdpart/httplib/httplib.h"
-#include "../../dto/dto.h"
+#include "../../netcoredto/netcoredto.h"
 #include "../../core/BlockchainCore.h"
 #include "../netcoreservice/NodeService.h"
 

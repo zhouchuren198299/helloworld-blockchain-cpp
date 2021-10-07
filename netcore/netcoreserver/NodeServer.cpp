@@ -167,7 +167,7 @@ namespace server{
 
     GetBlockchainHeightResponse NodeServer::getBlockchainHeight(GetBlockchainHeightRequest request) {
         try {
-            long blockchainHeight = blockchainCore->queryBlockchainHeight();
+            uint64_t blockchainHeight = blockchainCore->queryBlockchainHeight();
             GetBlockchainHeightResponse response ;
             response.blockchainHeight=blockchainHeight;
             return response;

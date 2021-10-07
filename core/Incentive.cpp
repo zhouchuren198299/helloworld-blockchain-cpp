@@ -28,8 +28,8 @@ namespace core{
      * 校验激励。
      */
     bool Incentive::checkIncentive(BlockchainDatabase *blockchainDatabase, Block *block) {
-        long writeIncentiveValue = BlockTool::getWritedIncentiveValue(block);
-        long targetIncentiveValue = incentiveValue(blockchainDatabase,block);
+        uint64_t writeIncentiveValue = BlockTool::getWritedIncentiveValue(block);
+        uint64_t targetIncentiveValue = incentiveValue(blockchainDatabase,block);
         if(writeIncentiveValue != targetIncentiveValue){
             LogUtil::debug("区块数据异常，挖矿奖励数据异常。");
             return false;

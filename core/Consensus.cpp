@@ -67,7 +67,7 @@ namespace core{
         // 上上个周期最后一个区块
         unique_ptr<Block> previousPreviousIntervalLastBlock = blockchainDatabase->queryBlockByBlockHeight(previousIntervalLastBlock->height- IncentiveSetting::INTERVAL_BLOCK_COUNT);
         // 上个周期出块实际耗时
-        long previousIntervalActualTimespan = previousIntervalLastBlock->timestamp - previousPreviousIntervalLastBlock->timestamp;
+        uint64_t previousIntervalActualTimespan = previousIntervalLastBlock->timestamp - previousPreviousIntervalLastBlock->timestamp;
 
 
         string hexPreviousIntervalActualTimespan = ByteUtil::bytesToHexString(ByteUtil::uint64ToBytes(previousIntervalActualTimespan));

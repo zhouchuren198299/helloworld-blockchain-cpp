@@ -6,7 +6,7 @@
 #define HELLOWORLD_BLOCKCHAIN_CPP_DTOSIZETOOL_H
 
 
-#include "../../dto/dto.h"
+#include "../../netcoredto/netcoredto.h"
 
 using namespace dto;
 

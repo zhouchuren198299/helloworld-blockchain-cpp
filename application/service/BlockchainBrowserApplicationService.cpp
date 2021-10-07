@@ -90,7 +90,7 @@ namespace service {
             transactionVo.transactionInputValues=TransactionTool::getInputValue(transaction.get());
             transactionVo.transactionOutputValues=TransactionTool::getOutputValue(transaction.get());
 
-            long blockchainHeight = blockchainNetCore->getBlockchainCore()->queryBlockchainHeight();
+            uint64_t blockchainHeight = blockchainNetCore->getBlockchainCore()->queryBlockchainHeight();
             unique_ptr<Block> block = blockchainNetCore->getBlockchainCore()->queryBlockByBlockHeight(transaction->blockHeight);
             transactionVo.confirmCount=blockchainHeight-block->height+1;
             transactionVo.blockTime=TimeUtil::formatMillisecondTimestamp(block->timestamp);

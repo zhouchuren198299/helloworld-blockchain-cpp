@@ -2,19 +2,16 @@
 // Created by 40906 on 2021/10/4.
 //
 #include "../thirdpart/httplib/httplib.h"
+#include "../core/tool/ResourcePathTool.h"
 #include "../util/SystemUtil.h"
 #include "../netcore/BlockchainNetCore.h"
 #include "../netcore/BlockchainNetCoreFactory.h"
-#include "../core/tool/ResourcePathTool.h"
-#include "../util/ThreadUtil.h"
-#include "../util/JsonUtil.h"
 #include "controller/NodeConsoleApplicationController.h"
-#include "vo/NodeConsoleApplicationApi/NodeConsoleApplicationApi.h"
 #include "controller/WalletApplicationController.h"
-#include "vo/WalletApplicationApi/WalletApplicationApi.h"
 #include "controller/BlockchainBrowserApplicationController.h"
 #include "vo/BlockchainBrowserApplicationApi/BlockchainBrowserApplicationApi.h"
-
+#include "vo/WalletApplicationApi/WalletApplicationApi.h"
+#include "vo/NodeConsoleApplicationApi/NodeConsoleApplicationApi.h"
 
 using namespace netcore;
 using namespace controller;
@@ -147,8 +144,8 @@ int main()
     });
 
 
+    SystemUtil::CallDefaultBrowser("http://localhost/");
 
 
     server.listen("0.0.0.0", 80);
-    ThreadUtil::millisecondSleep(10 * 60 * 60 * 1000);
 }
