@@ -4,6 +4,7 @@
 #include "../thirdpart/httplib/httplib.h"
 #include "../core/tool/ResourcePathTool.h"
 #include "../util/SystemUtil.h"
+#include "../util/FileUtil.h"
 #include "../netcore/BlockchainNetCore.h"
 #include "../netcore/BlockchainNetCoreFactory.h"
 #include "controller/NodeConsoleApplicationController.h"
@@ -22,7 +23,7 @@ int main()
     blockchainNetCore->start();
     
     httplib::Server server;
-    bool mountSuccess = server.set_mount_point("/", "D:\\workspace\\cLion\\helloworld-blockchain-cpp\\application\\resources\\static");
+    bool mountSuccess = server.set_mount_point("/", FileUtil::newPath(SystemUtil::systemRootDirectory(),"application/resources/static"));
     if(!mountSuccess){
         SystemUtil::errorExit("mount faild.", {});
     }
